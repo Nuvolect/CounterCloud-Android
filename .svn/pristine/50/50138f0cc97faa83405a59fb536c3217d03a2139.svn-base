@@ -1,0 +1,181 @@
+package com.nuvolect.countercloud.main;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.license.AppSpecific;
+import com.nuvolect.countercloud.license.AppUpgradeActivity;
+import com.nuvolect.countercloud.util.ActionBarUtil;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+
+public class SettingsActivity extends PreferenceActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private static final boolean DEBUG = false;
+    public static final String DELETE_DIALOG_SETTING = "pref_delete_dialog";
+    public static final String NOTIFY_INSERT_SETTING = "pref_notify_insert";
+    public static final String NOTIFY_UPDATE_SETTING = "pref_notify_update";
+    public static final String NOTIFY_DELETE_SETTING = "pref_notify_delete";
+    Activity m_act;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        m_act = this;
+        setContentView(R.layout.settings_preference);
+
+        ActionBarUtil.showTitleEnabled(m_act, true);
+        ActionBarUtil.homeAsUpEnabled(m_act, true);
+
+        SettingsFragment.startSettingsFragment( m_act, R.id.settings_fragmment_container);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Analytics.start(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Analytics.stop(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(DEBUG)LogUtil.log("SettingsFragmentActivity onPause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(DEBUG)LogUtil.log("SettingsFragmentActivity onResume");
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(DEBUG)LogUtil.log("SettingsFragmentActivity onDestroy");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        // Inflate the menu items for use in the action bar
+        getMenuInflater().inflate(R.menu.settings_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:{
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            }
+            case R.id.menu_upgrade:{
+
+                AppUpgradeActivity.startUpgradeActivity(m_act);
+                break;
+            }
+            case R.id.menu_whats_new:{
+                WhatsNewDialog.start(m_act);
+                break;
+            }
+            case R.id.menu_help:{
+                String url = AppSpecific.APP_HELP_URL;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                break;
+            }
+            case R.id.menu_developer_feedback:{
+
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"team@nuvolect.com"});
+                i.putExtra(Intent.EXTRA_SUBJECT, "CounterCloud Feedback");
+                i.putExtra(Intent.EXTRA_TEXT   , "How can we help?");
+
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(m_act, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if( ! notifySettingsEnabled( this))
+            WorkerCommand.unregisterCloudObserver(this);
+    }
+
+    public static boolean deleteDialogSetting(Context ctx){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean dialog_setting = sharedPref.getBoolean(DELETE_DIALOG_SETTING, true);
+
+        return dialog_setting;
+    }
+    public static boolean notifyInsertSetting(Context ctx){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean setting = sharedPref.getBoolean(NOTIFY_INSERT_SETTING, true);
+
+        return setting;
+    }
+    public static boolean notifyUpdateSetting(Context ctx){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean setting = sharedPref.getBoolean(NOTIFY_UPDATE_SETTING, true);
+
+        return setting;
+    }
+    public static boolean notifyDeleteSetting(Context ctx){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean setting = sharedPref.getBoolean(NOTIFY_DELETE_SETTING, true);
+
+        return setting;
+    }
+    /**
+     * If any of the notification settings are enabled, return true.
+     * @param ctx
+     * @return
+     */
+    public static boolean notifySettingsEnabled(Context ctx){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean insert = sharedPref.getBoolean(NOTIFY_INSERT_SETTING, true);
+        boolean update = sharedPref.getBoolean(NOTIFY_UPDATE_SETTING, true);
+        boolean delete = sharedPref.getBoolean(NOTIFY_DELETE_SETTING, true);
+
+        return insert || update || delete;
+    }
+}

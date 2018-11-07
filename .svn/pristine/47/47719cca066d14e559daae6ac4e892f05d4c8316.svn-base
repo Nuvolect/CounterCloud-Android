@@ -1,0 +1,41 @@
+package com.nuvolect.countercloud.license;
+
+/**
+ * Constants that can be used across all of the apps.
+ * In code that is to be common across all of the apps, reference these values indirectly through
+ * the AppSpecific class.  Example AppSpecific.APP_NAME. This way these classes
+ * are easily shared among the apps with minimal tailoring.
+ */
+public class LConst {
+
+    public static final String APP_CRYPSAFE          = "app_crypsafe";
+    public static final String APP_COUNTERCLOUD      = "app_countercloud";
+    public static final String APP_PHOTOSHIELD       = "app_photoshield";
+    public static final String APP_SECUIRESUITELM    = "app_securesuitelm";
+
+    public static final String CLIENT_APP_NAME       = "client_app_name";
+    public static final String CLIENT_APP_SECRET     = "client_app_secret";
+    public static final String CLIENT_APP_LICENSE    = "client_app_license";
+    public static final String EARLY_ADOPTER         = "early_adopter";
+
+    public static final String LICENSE_MIME_TYPE     = "nuvolect/ss";
+    public static final String SS_SHOP_CRYPSAFE      = "com.nuvolect.securesuitelm.shop.crypsafe";
+    public static final String SS_SHOP_COUNTERCLOUD  = "com.nuvolect.securesuitelm.shop.countercloud";
+    public static final String SS_SHOP_PHOTOSHIELD   = "com.nuvolect.securesuitelm.shop.photoshield";
+    public static final String SS_INTENT_GET         = "com.nuvolect.securesuitelm.action.GET";
+    public static final String SS_GOOGLE_PLAY_HREF_URL = "<a href='https://play.google.com/store/apps/details?id=com.nuvolect.securesuitelm'>SecureSuite LM at Google Play</a>";
+
+    public static final String CS_PASSPHRASE         = "SPOabtWXV8CifaZ8QOI4CxcQWQPor2F1";
+    public static final String CC_PASSPHRASE         = "nN8DRtGe0m2mvbEzoMxjWBlX3SMBXX5s";
+    public static final String PS_PASSPHRASE         = "ucTonmLIc3K7wiV8tv74EllN7IG6cOAg";
+
+    public static final String LICENSE_ACCOUNT       = "license_account";
+
+    public static final String CC_SKU                = "cc_sku_ea";
+    public static final String CS_SKU                = "cs_sku_ea";
+    public static final String PS_SKU                = "ps_sku";
+    public static final String SS_SKU                = "ss_sku_ea";
+
+    public static final String SKU_DETAILS           = "sku_details";
+    public static final String SKU_PURCHASE          = "sku_purchase";
+}

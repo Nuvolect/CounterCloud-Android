@@ -1,0 +1,172 @@
+package com.nuvolect.countercloud.survey;//
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+//TODO create class description
+//
+public class SurveyUtil {
+
+    public static int getContactsAppsTotal(Context ctx) {
+
+        int appsAccessingContacts = 0;
+
+        PackageManager pm = ctx.getPackageManager();
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo applicationInfo : packages) {
+            try {
+                PackageInfo packageInfo = pm.getPackageInfo(applicationInfo.packageName, PackageManager.GET_PERMISSIONS);
+
+                String[] requestedPermissions = packageInfo.requestedPermissions;
+
+                if(requestedPermissions != null) {
+
+                    for (int i = 0; i < requestedPermissions.length; i++) {
+
+                        if( requestedPermissions[i].contains("CONTACTS")) {
+
+                            ++appsAccessingContacts;
+                            break;
+                        }
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return appsAccessingContacts;
+    }
+
+    /**
+     * Publish a survey or update the survey for all contacts apps of a single device.
+     * Each app survey publish event is timestamped. Timestamps are checked and updated when the
+     * survey results are published. Survey results for an app cannot be published more than one
+     * time in 7 days. This way a snapshot of apps can be taken at any time without being heavily
+     * influenced by users that frequently run the app.
+     * @param ctx
+     */
+    public static void publishContactsAppsSurvey(Context ctx) {
+
+        JSONObject m_appObj = getAppDb(ctx);
+        int publishTotal = 0;
+        int contactAppsTotal = 0;
+
+        PackageManager pm = ctx.getPackageManager();
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo applicationInfo : packages) {
+            try {
+                boolean readHit = false;
+                boolean writeHit = false;
+                PackageInfo packageInfo = pm.getPackageInfo(applicationInfo.packageName, PackageManager.GET_PERMISSIONS);
+
+                String[] requestedPermissions = packageInfo.requestedPermissions;
+
+                if(requestedPermissions != null) {
+
+                    for (int i = 0; i < requestedPermissions.length; i++) {
+
+                        if( requestedPermissions[i].contains("WRITE_CONTACTS")) {
+
+                            readHit = true;
+                            writeHit = true;
+                            break;
+                        }
+                        else
+                        if( requestedPermissions[i].contains("READ_CONTACTS")) {
+
+                            readHit = true;
+                        }
+                    }
+                    if(readHit || writeHit){
+
+                        AppItem appItem = new AppItem();
+                        appItem.appName = String.valueOf(applicationInfo.loadLabel(pm));
+                        appItem.appPackageName = applicationInfo.packageName;
+
+                        String readWrite = "r";
+                        if( writeHit)
+                            readWrite = "rw";
+
+                        String val = m_appObj.optString(appItem.appPackageName,"unknown");
+
+                        publishTotal += Publish.getInstance(ctx)
+                                .publishCond7Days(Analytics.SURVEY+val, appItem, readWrite);
+                        ++contactAppsTotal;
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        LogUtil.log(LogUtil.LogType.APP_SURVEY, "Total published: "+publishTotal);
+
+        //TODO publish totals for unknown, known, android, google, ie., for each category
+        // Publish the number of apps along with app version and SDK.
+        Publish.getInstance(ctx).publishCondTotal7Days(contactAppsTotal);
+
+        // Persist survey timers
+        Publish.getInstance(ctx).surveySave();
+    }
+
+    /**
+     * Read the app database and return it as a JSON object.
+     * @param ctx
+     * @return
+     */
+    public static JSONObject getAppDb(Context ctx){
+
+        /**
+         * Load packages from raw resources into a JSON object
+         */
+        String fileContents = "";
+        StringBuilder sb = new StringBuilder();
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            InputStream is = ctx.getResources().openRawResource(R.raw.app_survey_data);
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+
+                String s = new String( buffer, 0, len, "UTF-8");
+                sb.append( s );
+            }
+            fileContents = sb.toString();
+
+            if( is != null)
+                is.close();
+        } catch (FileNotFoundException e) {
+            LogUtil.logException(LogUtil.LogType.APP_SURVEY_FRAGMENT, e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Build the JSON array
+         */
+        try {
+
+            jsonObject= new JSONObject( fileContents );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+}

@@ -1,0 +1,128 @@
+/*******************************************************************************
+ * Copyright (c) 2011 - 2014, Nuvolect LLC. All Rights Reserved.
+ * All intellectual property rights, including without limitation to
+ * copyright and trademark of this work and its derivative works are
+ * the property of, or are licensed to, Nuvolect LLC.
+ * Any unauthorized use is strictly prohibited.
+ ******************************************************************************/
+package com.nuvolect.countercloud.util;
+
+import android.app.Activity;
+import android.content.Context;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+
+public class Analytics {
+
+    static EasyTracker easyTracker;
+
+    // GA Category
+    public static final String ACT                 = "Act_";
+    public static final String BOOT                = "Boot_";
+    public static final String DIALOG              = "Dialog_";
+    public static final String FRAG                = "Frag_";
+    public static final String GCM                 = "Gcm_";
+    public static final String SERV                = "Serv_";
+    public static final String SURVEY              = "Survey_";
+    public static final String SURVEY_CUSTOM       = "Survey_custom";
+    public static final String SURVEY_UNKNOWN      = "Survey_unknown";
+    public static final String SURVEY_TOTAL        = "Survey_total";
+
+    // GA Action
+    public static final String ADAPTER             = "adapter";
+    public static final String APP_SURVEY          = "App_Survey";
+    public static final String BUTTON              = "button";
+    public static final String EVENT               = "Event";
+    public static final String LICENSE_ACTIVITY    = "LicenseActivity";
+    public static final String LONG_PRESS          = "LongPress";
+    public static final String MENU                = "Menu";
+    public static final String OBSERVER            = "observer";
+    public static final String ON_ACTIVITY_RESULT  = "onActivityResult";
+    public static final String RESPONSE            = "Response";
+    public static final String SHORT_PRESS         = "ShortPress";
+
+    // GA Label
+    public static final String ADDED               = "added";
+    public static final String ALL_CONTACTS        = "all_contacts";
+    public static final String APP_CUSTOM          = "app_custom";
+    public static final String APP_TOTAL           = "app_total";
+    public static final String APP_UNKNOWN         = "app_unknown";
+    public static final String CANCEL              = "cancel";
+    public static final String CLOSE_TIPS          = "close_tips";
+    public static final String CLOUD_MANAGER       = "cloud_manager";
+    public static final String COUNT               = "count";
+    public static final String DELETE_LOG          = "delete_log";
+    public static final String DELETED             = "deleted";
+    public static final String DONT_ASK_AGAIN      = "dont_ask_again";
+    public static final String EVENT_LOG           = "event_log";
+    public static final String GOOGLE_ACCOUNTS     = "google_accounts";
+    public static final String HELP                = "help";
+    public static final String HIDE_TIPS           = "hide_tips" ;
+    public static final String MAIN_ACTIVITY       = "main_activity";
+    public static final String MAKE_DONATION       = "make_donation";
+    public static final String NEXT_TIP            = "next_tip";
+    public static final String PREVIOUS_TIP        = "previous_tip";
+    public static final String RATE_THIS_APP       = "rate_this_app";
+    public static final String RAW_CONTACTS        = "raw_contacts";
+    public static final String RAW_DATA            = "raw_data";
+    public static final String REFRESH             = "refresh";
+    public static final String SETTINGS            = "settings";
+    public static final String SHOW_TIP            = "show_tip";
+    public static final String UPDATED             = "updated";
+
+    public static final String EARLY_ADOPTER       = "early_adopter";
+    public static final String EVAL_EXPIRED_USER   = "eval_expired_user";
+    public static final String EVAL_USER           = "eval_user";
+    public static final String PREMIUM_USER        = "preimium_user";
+    public static final String WHITELIST_USER      = "whitelist_user";
+    public static final String SECURITY_CHECK      = "security_check";
+
+    /**
+     * Generate Google Analytics for events
+     *
+     * @param easyTracker
+     * @param category - String
+     * @param action - String
+     * @param label - String
+     * @param value - Long
+     */
+    public static void send(Context ctx, String category,
+            String action, String label, long value) {
+
+        try {
+            if( easyTracker == null ){
+
+                easyTracker = EasyTracker.getInstance(ctx);
+                LogUtil.log(LogType.ANALYTICS, "Analytics.send, restored from NULL");
+            }
+
+            // Post an "event" for next day analysis
+            easyTracker.send(MapBuilder.createEvent(category, action, label, value).build());
+
+        } catch (Exception e) {
+            LogUtil.log(LogType.ANALYTICS, "exception in Analytics.send");
+            LogUtil.logException( ctx, LogType.ANALYTICS, e);
+        }
+    }
+
+    /**
+     * Publish Google Analytics activity state, i.e., screen
+     * @param activity
+     */
+    public static void start(Activity activity) {
+
+        easyTracker = EasyTracker.getInstance(activity);
+        easyTracker.activityStart(activity);
+    }
+
+    /**
+     * Publish Google Analytics activity state, i.e., screen
+     * @param activity
+     */
+    public static void stop(Activity activity) {
+
+        easyTracker.activityStop(activity);
+    }
+}

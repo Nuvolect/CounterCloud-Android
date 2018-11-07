@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string-array name="action_bar_spinner_menu">
+    	<item>All contacts</item>
+    	<item>Favorites</item>
+    	<item>Groups</item>
+	</string-array>
+
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_menu_refresh"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:title="Refresh"
+        android:titleCondensed="Refresh">
+    </item>
+    <item
+        android:id="@+id/menu_security_check"
+        android:title="Security Check"
+        android:titleCondensed="Security check">
+    </item>
+    <item
+        android:id="@+id/menu_event_log"
+        android:title="Cloud Event Log"
+        android:titleCondensed="Cloud event log">
+    </item>
+    <item
+        android:id="@+id/menu_app_survey"
+        android:title="Permission Survey"
+        android:titleCondensed="Permission Survey">
+    </item>
+    <item
+        android:id="@+id/menu_settings"
+        android:title="Settings"
+        android:titleCondensed="Settings">
+    </item>
+    <item
+        android:id="@+id/menu_help"
+        android:title="Help"
+        android:titleCondensed="Help">
+    </item>
+
+</menu>

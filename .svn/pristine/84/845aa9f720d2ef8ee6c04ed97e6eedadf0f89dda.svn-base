@@ -1,0 +1,17 @@
+package com.nuvolect.countercloud.main;
+
+
+public class CConst {
+
+    public static final String FOLDER_NAME          = "/countercloud/";
+
+	public static final String CC_TOC_HREF_URL = "<a href='http://nuvolect.com/countercloud_terms'>Terms and Conditions</a>";
+	public static final String CC_PP_HREF_URL  = "<a href='http://nuvolect.com/privacy'>Privacy Policy</a>";
+    public static final String CC_GOOGLE_PLAY_HREF_URL = "<a href='https://play.google.com/store/apps/details?id=com.nuvolect.countercloud'>CounterCloud at Google Play</a>";
+
+    public static final String ACCOUNT_KEY             = "account_key";
+    public static final String SECURITY_CHECK          = "security_check";
+    public static final String ALL_ACCOUNTS            = "All accounts";
+
+    public static final String EVENT_LOG_FRAGMENT_TAG  = "event_log_fragment_tag";
+}

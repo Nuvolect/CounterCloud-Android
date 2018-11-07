@@ -1,0 +1,646 @@
+package com.nuvolect.countercloud.main;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.license.Whitelist;
+import com.nuvolect.countercloud.survey.SurveyUtil;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+import com.nuvolect.countercloud.util.PermissionUtil;
+import com.nuvolect.countercloud.util.Util;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+/**
+ * A list fragment representing a list of People. This fragment also supports
+ * tablet devices by allowing list items to be given an 'activated' state upon
+ * selection. This helps indicate which item is currently being viewed in a
+ * {@link ContactDetailFragment}.
+ * <p>
+ * Activities containing this fragment MUST implement the {@link Callbacks}
+ * interface.
+ */
+public class CloudMainFragment extends Fragment {
+
+    //    private static final boolean DEBUG = false;
+    RelativeLayout m_cloudSummaryRl;
+    Activity m_act;
+    Context m_ctx;
+    boolean m_wasPaused;
+    ContentResolver m_contentResolver;
+    HashMap<String, Integer> m_rawContactsMap;
+    HashMap<String, Integer> m_rawDataMap;
+    int pad15;
+    int pad8;
+    int pad5;
+    int editButtonSize;
+    int m_shadowColor;
+    int m_textColor;
+    int m_searchColor;
+    View m_rootView;
+    AsyncTask<Void, Void, Void> m_queryCloudAsyncTask;
+    AsyncTask<Void, Void, Integer> m_appSurveyAsyncTask;
+
+    android.widget.TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(
+            TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onAccountEditSelected(String accountToManage);
+        public void onRefreshFragment();
+    }
+    /**
+     * A dummy implementation of the {@link Callbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onAccountEditSelected(String accountToManage) { }
+        @Override
+        public void onRefreshFragment() { };
+    };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException(
+                    "Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public CloudMainFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LogUtil.log( LogType.CLOUD_MAIN_FRAGMENT, "onCreate()");
+
+        m_act = getActivity();
+        m_ctx = m_act.getApplicationContext();
+        m_wasPaused = true;
+        setHasOptionsMenu( true );
+
+        m_contentResolver = m_act.getContentResolver();
+
+        pad15 = Util.unitsDpEquiv(getActivity(), 15);
+        pad8 = Util.unitsDpEquiv(getActivity(), 8);
+        pad5 = Util.unitsDpEquiv(getActivity(), 5);
+        m_shadowColor = getResources().getColor(R.color.navy);
+        m_textColor = getResources().getColor(R.color.white);
+        m_searchColor = getResources().getColor(R.color.whitetrans);
+
+        editButtonSize = Util.unitsDpEquiv(getActivity(), 40);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtil.log( LogType.CLOUD_MAIN_FRAGMENT, "onResume()");
+
+        if( m_wasPaused){
+
+            resetCloudSummary();
+            m_wasPaused = false;
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        LogUtil.log( LogType.CLOUD_MAIN_FRAGMENT, "onPause()");
+
+        if( m_queryCloudAsyncTask != null )
+            m_queryCloudAsyncTask.cancel( true );
+
+        if( m_appSurveyAsyncTask != null )
+            m_appSurveyAsyncTask.cancel( true );
+
+        m_wasPaused = true;
+    }
+
+    /**
+     * Used when exiting to allow old data to be reclaimed by memory management
+     * and to facilitate a refresh when/if user returns to this activity.
+     */
+    private void clearCloudSummaryData(){
+
+        m_rawContactsMap = new HashMap<String, Integer>();
+        m_rawDataMap = new HashMap<String, Integer>();
+    }
+
+    /** Fire off the background task of generating all the metrics
+     * Build the view in the postExecute stage of the async task.
+     */
+    public void resetCloudSummary(){
+
+        clearCloudSummaryData();
+
+        if(PermissionUtil.canAccessReadContacts(m_act)) {
+            m_queryCloudAsyncTask = new QueryCloudAsync().execute();
+            m_appSurveyAsyncTask = new AppSurveyAsync().execute();
+        }
+        else
+            PermissionUtil.requestReadContacts(m_act, 222);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch( requestCode){
+
+            case 222:{
+
+                if( grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    m_queryCloudAsyncTask = new QueryCloudAsync().execute();
+                    m_appSurveyAsyncTask = new AppSurveyAsync().execute();
+                }
+                break;
+            }
+            default:
+        }
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        LogUtil.log( LogType.CLOUD_MAIN_FRAGMENT, "onCreateView()");
+
+        m_rootView = inflater.inflate(R.layout.cloud_main_fragment, container, false);
+
+        return m_rootView;
+    }
+
+    private class QueryCloudAsync extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void...arg0) {
+
+            generateCloudSummary();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+
+            if( m_wasPaused || m_act == null || m_act.isFinishing())
+                return;
+
+            buildView();
+
+            // Display tips if enabled
+            ShowTips.getInstance(m_act).embeddedShowTips();
+        }
+    }
+
+    //On the UI thread, build the view
+    private void buildView(){
+
+        // Dynamically build a layout of a RelativeLayout
+        m_cloudSummaryRl = (RelativeLayout) m_rootView.findViewById(R.id.cloud_main_summaryRl);
+
+        // Remove any previous view, we are about ready to replace it
+        m_cloudSummaryRl.removeAllViews();
+
+        TableLayout dataTable = new TableLayout( m_act);
+        dataTable.setId( Util.generateViewId());
+
+        dataTable.setLayoutParams( tableLayoutParams);
+        m_cloudSummaryRl.addView(dataTable);
+
+        // Clear the display of any previous table views
+        dataTable.setPadding( pad15, pad15, pad15, pad15);
+        dataTable.setColumnShrinkable( 0, true);
+        dataTable.setColumnStretchable( 1, false);
+        dataTable.setColumnStretchable( 2, false);
+        dataTable.setColumnStretchable( 3, false);
+
+        // Create the top row: name, expand arrow and mini profile photo
+        TableRow row = makeRow();
+
+        TextView headingTv = new TextView( m_act);
+        headingTv.setText("Cloud Summary");
+        headingTv.setSoundEffectsEnabled( false);
+        headingTv.setTextAppearance(m_act, android.R.style.TextAppearance_Large);
+        headingTv.setTextColor(m_textColor);
+        headingTv.setShadowLayer(1f, 1, 1, m_shadowColor);
+        headingTv.setPadding(0, 0, 0, pad15);
+        headingTv.setClickable(true);
+        headingTv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if( ! Whitelist.onWhitelist(m_ctx).isEmpty())
+                    DeveloperDialog.start(m_act);
+            }
+        });
+        row.addView(headingTv);
+        dataTable.addView( row);
+
+        row = makeRow(); // Add title line 1
+        addColumn( row, "",    R.dimen._22sp, 0, pad5, pad8, 0);
+        addColumn( row, "Raw", R.dimen._22sp, 0, pad5, pad8, 0);
+        addColumn( row, "Raw", R.dimen._22sp, 0, pad5, pad8, 0);
+        addColumn( row, "",    R.dimen._22sp, 0, pad5, pad8, 0);
+        dataTable.addView(row);
+
+        row = makeRow(); // Add title line 2
+        addColumn( row, "Account",  R.dimen._22sp, 0, 0, pad8, pad5);
+        addColumn( row, "Contacts", R.dimen._22sp, 0, 0, pad8, pad5);
+        addColumn( row, "Data",     R.dimen._22sp, 0, 0, pad8, pad5);
+        addColumn( row, "",         R.dimen._22sp, 0, 0, pad8, pad5);
+        dataTable.addView(row);
+
+        // Add rule line
+        addRule( dataTable);
+
+        int totalRawContacts = 0;
+        int totalRawData = 0;
+
+        for( Map.Entry<String, Integer> anAccount : m_rawContactsMap.entrySet()){
+
+            String currentAccount="";
+            int rawContactsThisAccount=0;
+            int rawDataThisAccount=0;
+            try {
+                currentAccount = anAccount.getKey();
+                rawContactsThisAccount = anAccount.getValue();
+                rawDataThisAccount = m_rawDataMap.get( currentAccount);
+            } catch (Exception e) {
+                LogUtil.logException(m_ctx, LogType.CLOUD_MAIN_FRAGMENT, e);
+            }
+
+            row = makeRow();
+            addColumn( row, currentAccount, R.dimen._22sp);
+            addColumn( row, rawContactsThisAccount+"", R.dimen._22sp);
+            addColumn( row, rawDataThisAccount+"", R.dimen._22sp);
+            ImageView iv = new ImageView( m_act);
+            TableRow.LayoutParams photoMenu_layoutParams = new TableRow.LayoutParams(editButtonSize, editButtonSize);
+            iv.setLayoutParams(photoMenu_layoutParams);
+            iv.setImageDrawable( getResources().getDrawable(R.drawable.ic_menu_find));
+//            iv.setColorFilter(m_searchColor);
+            /**
+             * Use a customer click listener to keep track of which account was clicked
+             */
+            iv.setOnClickListener( new CustomOnClickListener( currentAccount){
+
+                @Override
+                public void onClick(View v) {
+
+                    // Release memory and setup to refresh if/when coming back
+                    clearCloudSummaryData();
+                    mCallbacks.onAccountEditSelected( m_account);
+                }});
+            row.addView( iv );
+            dataTable.addView(row);
+
+            totalRawContacts += rawContactsThisAccount;
+            totalRawData += rawDataThisAccount;
+        }
+
+        // Add rule line
+        addRule( dataTable);
+
+        //summary row
+        row = makeRow();
+        addColumn( row, "Total", R.dimen._22sp);
+        addColumn( row, totalRawContacts+"", R.dimen._22sp);
+        addColumn( row, totalRawData+"", R.dimen._22sp);
+        addColumn( row, "", R.dimen._22sp);
+        dataTable.addView(row);
+
+        row = makeRow();
+        TextView tv2 = new TextView( m_act);
+        tv2.setText(CConst.ALL_ACCOUNTS);
+        tv2.setTextAppearance(m_act, android.R.style.TextAppearance_Medium);
+        tv2.setTextColor(m_textColor);
+        tv2.setShadowLayer(1f, 1, 1, m_shadowColor);
+        tv2.setPadding(0, pad15, pad8, 0);
+        tv2.setGravity(Gravity.RIGHT);
+        TableRow.LayoutParams params = (TableRow.LayoutParams)row.getLayoutParams();
+        params.span = 3;
+        tv2.setLayoutParams(params);
+        row.addView(tv2);
+        ImageView iv = new ImageView( m_act);
+        TableRow.LayoutParams search_icon_params = new TableRow.LayoutParams(editButtonSize, editButtonSize);
+        search_icon_params.topMargin = pad15;
+        iv.setLayoutParams(search_icon_params);
+        iv.setImageDrawable( getResources().getDrawable(R.drawable.ic_menu_find));
+//        iv.setColorFilter(m_searchColor);
+        iv.setOnClickListener( new CustomOnClickListener( CConst.ALL_ACCOUNTS){
+
+            @Override
+            public void onClick(View v) {
+
+                // Release memory and setup to refresh if/when coming back
+                clearCloudSummaryData();
+                mCallbacks.onAccountEditSelected( m_account);
+            }});
+        row.addView( iv );
+        dataTable.addView(row);
+    }
+
+    /**
+     * Custom listener maintains a specific account icon or all accounts icon
+     * selected by the user
+     */
+    private class CustomOnClickListener implements OnClickListener {
+
+        public String m_account;
+
+        public CustomOnClickListener( String account2) {
+            m_account = account2;
+        }
+        public void onClick(View arg0) { }
+    }
+
+    private TableRow makeRow() {
+
+        TableRow row = new TableRow(m_act);
+        row.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT));
+
+        return row;
+    }
+
+    private void addColumn(TableRow row, String string, int dimensionRef) {
+
+        addColumn(row, string, dimensionRef, 0, pad5, pad8, pad5);
+    }
+    private void addColumn(TableRow row, String string, int dimensionRef, int left, int top, int right, int bottom) {
+
+        TextView colTv = new TextView( m_act );
+        colTv.setTextAppearance(m_act, android.R.style.TextAppearance_Small);
+        colTv.setPadding(left, top, right, bottom);
+        colTv.setText(string);
+        colTv.setTextColor(m_textColor);
+        colTv.setShadowLayer(1f, 1, 1, m_shadowColor);
+        row.addView(colTv);
+    }
+
+    private void addRule(TableLayout dataTable) {
+
+        TableRow row = new TableRow(m_act);
+        row.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT));
+
+        for( int i=0; i< 4; i++){
+
+            View v = new View( m_act);
+            v.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+            v.setBackgroundColor(Color.rgb(51, 51, 51));
+            row.addView( v );
+        }
+        dataTable.addView(row);
+    }
+    /**
+     * Get the RawContacts data summary for each account
+     */
+    private void generateCloudSummary(){
+
+        // Setup data and contacts maps from scratch
+        m_rawContactsMap = new  HashMap<String, Integer>();
+        m_rawDataMap =  new  HashMap<String, Integer>();
+
+        Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+
+        Account[] myAccounts = AccountManager.get(m_act).getAccounts();
+
+            /* We only want "com.google" accounts, example next line
+             * myAccount.type == com.google, name == matt.kraus@nuvolect.com
+             * myAccount.type == com.linkedin.android, name == mr.matt.kraus@gmail.com
+             * myAccount.type == com.google.android.legacyimap, name == mattkraus@yahoo.com
+             * myAccount.type == com.dropbox.android.account, name == matt.kraus@nuvolect.com
+             */
+
+        for (Account myAccount : myAccounts) {
+
+            if ( myAccount != null && ! myAccount.name.isEmpty() &&
+                    myAccount.type.contentEquals("com.google")
+                    && EMAIL_PATTERN.matcher(myAccount.name).matches()){
+
+                m_rawContactsMap.put(myAccount.name.toLowerCase(Locale.US), 0);
+            }
+        }
+
+        String selectionA = ContactsContract.RawContacts.DELETED + " != 1";
+        String selectionB = ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY + " <> ''";
+        String selection = DatabaseUtils.concatenateWhere( selectionA, selectionB);
+
+        Cursor c = m_contentResolver.query(
+                ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{
+                        ContactsContract.RawContacts.ACCOUNT_NAME,
+                        ContactsContract.RawContacts.CONTACT_ID, },
+                selection, null, null );
+
+        // Cursor should never be null, however analytics tells me it is sometimes null
+        if( c == null){
+            if( m_act != null)
+                Toast.makeText(m_act, "Error accessing cloud", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //First tally all of the raw contacts by account
+
+        while( c.moveToNext()){
+
+            String account = c.getString( 0 );
+            if( account == null || account.isEmpty())
+                break;
+            account = account.toLowerCase(Locale.US);
+
+            // Build contact and data sums for each account
+            if( m_rawContactsMap.containsKey(account)){
+
+                Integer rawContactTotal = m_rawContactsMap.get(account);
+                m_rawContactsMap.put(account, ++rawContactTotal);
+
+            }else
+                m_rawContactsMap.put(account, 1);
+        }
+        c.close();
+
+        //Next iterate through each account and tally raw data counts
+
+        for( Map.Entry<String, Integer> account : m_rawContactsMap.entrySet()){
+
+            //TODO find a way to get more logical analytics, not just first account
+            int count = getRawDataCount( account.getKey(), CloudManagerFragment.CloudManagerMode.RAW_DATA);
+            m_rawDataMap.put(account.getKey(), count);
+        }
+    }
+
+    /**
+     * Mirror the cursor definition used by CloudManagerFragment to generate counts.
+     * @param account
+     * @param data_type
+     * @return int under cursor
+     */
+    private int getRawDataCount( String account, CloudManagerFragment.CloudManagerMode data_type ){
+
+        int count = 0;
+        Cursor cursor=null;
+
+        String where = "";
+        String[] args = null;
+
+        /**
+         * Early return if device does not provide a valid account.
+         */
+        if( account == null){
+            LogUtil.log(LogType.CLOUD_MAIN_FRAGMENT, "getRawDataCount, account == null");
+            return 0;
+        }
+        if( !account.contains(CConst.ALL_ACCOUNTS)){
+
+            where = "account_name LIKE ?";
+            args = new String[]{ "%" + account + "%"};
+        }
+
+        switch ( data_type){
+
+            case RAW_CONTACTS:{
+
+                String deleted_where = ContactsContract.RawContacts.DELETED + " != 1 AND "
+                        + ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY + " <> ''";
+                where = DatabaseUtils.concatenateWhere( where, deleted_where);
+
+                cursor = m_contentResolver.query(
+                        ContactsContract.RawContacts.CONTENT_URI,
+                        new String[]{ // projection
+                                ContactsContract.RawContacts._ID,
+                                ContactsContract.RawContacts.ACCOUNT_NAME,
+                                ContactsContract.RawContacts.ACCOUNT_TYPE,
+                                ContactsContract.RawContacts.CONTACT_ID,
+                                ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY,
+                        },
+                        where, // selection
+                        args,  // selection params
+                        null
+                );
+
+                // Don't clog the log
+//            if( Persist.oncePerDayRawContacts(m_ctx)){
+
+                //TODO find a way to get more logical analytics, not just first account
+                Analytics.send( m_ctx,
+                        Analytics.FRAG+"CloudMain",
+                        Analytics.RAW_CONTACTS,
+                        Analytics.COUNT, cursor.getCount());
+//            }
+                break;
+            }
+            case RAW_DATA:{
+
+                String deleted_where = ContactsContract.Data.DISPLAY_NAME + " <> ''";  // selection
+                where = DatabaseUtils.concatenateWhere( where, deleted_where);
+
+                cursor = m_contentResolver.query(
+                        ContactsContract.Data.CONTENT_URI,
+                        new String[]{ // projection
+                                ContactsContract.Data._ID,
+                                ContactsContract.Data.RAW_CONTACT_ID,
+                                ContactsContract.Data.DATA1,
+                                ContactsContract.Data.DISPLAY_NAME,
+                                ContactsContract.Data.MIMETYPE,
+                        },
+                        where, // selection
+                        args,  // selection params
+                        null
+                );
+
+                // Don't clog the log
+//            if( Persist.oncePerDayRawData(m_ctx)){
+
+                Analytics.send( m_ctx,
+                        Analytics.FRAG+"CloudMain",
+                        Analytics.RAW_DATA,
+                        Analytics.COUNT, cursor.getCount());
+//            }
+                break;
+            }
+            default:
+                break;
+        }
+        count = cursor.getCount();
+        cursor.close();
+
+        return count;
+    }
+
+    private class AppSurveyAsync extends AsyncTask<Void, Void, Integer>
+    {
+        @Override
+        protected Integer doInBackground(Void...arg0) {
+
+            return SurveyUtil.getContactsAppsTotal(m_act);
+        }
+
+        @Override
+        protected void onPostExecute(Integer contactsAppsTotal) {
+
+            if( m_wasPaused || m_act == null || m_act.isFinishing())
+                return;
+
+            // Display results
+            TextView tv = (TextView) m_rootView.findViewById(R.id.permissionSummaryTv);
+            tv.setText("Apps that can read your contacts: "+contactsAppsTotal);
+        }
+    }
+}

@@ -1,0 +1,71 @@
+package com.nuvolect.countercloud.data;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.nuvolect.countercloud.main.CloudManagerFragment.CloudManagerMode;
+
+public class Persist {
+
+    private static final String PERSIST_NAME           = "cc_persist";
+
+    // Persist keys
+    private static final String ACCOUNT_MD5            = "account_md5";
+    private static final String ACCOUNT_NAME           = "account_name";
+	private static final String TIME_LAST_UPDATE       = "time_last_update";
+    private static final String CLOUD_MGR_MODE         = "cloud_mgr_mode";
+
+    /**
+     * Remove all persistent data.
+     */
+    public static void clearAll(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().clear().commit();
+    }
+
+    //TODO save all Persist data into the encrypted sql database. i.e., all data is encrypted
+
+    public static void setAccountName(Context ctx, String accountName){
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putString(ACCOUNT_NAME, accountName).commit();
+    }
+    public static String getAccountName(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        return pref.getString(ACCOUNT_NAME, "");
+    }
+
+    public static void setAccountMd5(Context ctx, String md5) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putString(ACCOUNT_MD5, md5).commit();
+    }
+    public static String getAccountMd5(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        return pref.getString(ACCOUNT_MD5, "");
+    }
+
+    public static void setTimeLastUpdate(Context ctx, Long time) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putLong(TIME_LAST_UPDATE, time).commit();
+    }
+
+	public static long getTimeLastUpdate(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        return pref.getLong(TIME_LAST_UPDATE, 0L);
+	}
+
+    /** Save the current mode of the Cloud manager */
+    public static CloudManagerMode getCloudManagerMode(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+
+        // Stored as an int, get saved value and restore to the enum type
+        int spinType = pref.getInt(CLOUD_MGR_MODE, CloudManagerMode.RAW_CONTACTS.ordinal());
+        return CloudManagerMode.values()[spinType];
+    }
+
+    /** Return the current mode of the Cloud Manager */
+    public static void setCloudManagerMode(Context ctx, CloudManagerMode managerMode){
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putInt(CLOUD_MGR_MODE, managerMode.ordinal()).commit();
+    }
+}

@@ -1,0 +1,477 @@
+package com.nuvolect.countercloud.license;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.data.Persist;
+import com.nuvolect.countercloud.main.CConst;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+import com.nuvolect.countercloud.util.SimpleCrypto;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+/**
+ * Class to manage the license related activities of startup.
+ * In the onCreate method of each entry class of the app call LicenseManager with
+ * a listener to get the LicenseResult.
+ * <pre>
+ * Startup process:
+ * C - step performed on Client, i.e, inside the app
+ * M - step performed on the License Manager, i.e, inside the SecureSuite LM
+ *
+ C 1. Check time bomb
+ C 1.a App expired, LicenseResult.TIME_BOMB
+ C 2. Local test for premium user, LicenseResult.PREMIUM_USER
+ C 3. Local test for early adopter, LicenseResult.EARLY_ADOPTER
+ C 4. Test for first time startup, if so
+ C 4.a Prompt for concurrence with terms and conditions, LicenseResult.REJECT_TERMS
+ C 4.b Prompt for a master account (if only 1 account, use it, don't prompt)
+ C 5 Check for whitelist user, LicenseResult.WHITELIST_USER
+ M 6 Check SS for premium user, LicenseResult.PREMIUM_USER
+ C 7.Check for early adopter, LicenseResult.EARLY_ADOPTER
+ C 8 Check if eval time/events remain
+ C 8.a Eval is ongoing, LicenseResult.EVAL_USER
+ C 8.b Eval has expired, LicenseResult.EVAL_EXPIRED
+ *
+ *</pre>
+ */
+public class LicenseClient {
+
+    private final static boolean DEBUG = LogUtil.DEBUG;
+
+    /**
+     * License type is saved in the ordinal position, do not reorder this list.
+     */
+    public enum LicenseResult { NIL, REJECTED_TERMS, TIME_BOMB,
+        WHITELIST_USER, PREMIUM_USER, EVAL_USER, EVAL_EXPIRED, EARLY_ADOPTER }
+
+    private static Activity m_act;
+
+    public static boolean mIsPremium = false; // Does the user have the premium upgrade?
+
+    private static String mLicenseAccount;
+
+    /** Short description of current license for the Settings page */
+    public static String mLicenseSummary = "";
+
+    private static LicenseCallbacks mListener;
+    static AlertDialog dialog_alert = null;
+
+    /**
+     * A callback interface that all activities containing this class must implement.
+     */
+    public interface LicenseCallbacks {
+
+        public void licenseResult(LicenseResult licenseResult);
+    }
+
+    public static void checkLicense(Activity act, LicenseCallbacks listener){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_0");
+
+        m_act = act;
+        mListener = listener;
+
+        step_1a_test_app_expired();
+
+    }
+    private static void step_1a_test_app_expired() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_1a_test_app_expired");
+
+        Calendar expirationDate = Calendar.getInstance();
+        expirationDate.set(2016, 2, 1);  //hardcoded Mar 1, 2016 expiration date
+        Calendar t = Calendar.getInstance();  //Calendar with current time/date
+        if (t.after(expirationDate)){
+
+            mLicenseSummary = "The application version has expired and is no longer valid.";
+            mListener.licenseResult( LicenseResult.TIME_BOMB);
+            // All done here, calling class will take over with returned result
+        }else{
+
+            step_2_local_check_premium_user();
+        }
+    }
+
+    private static void step_2_local_check_premium_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_2_local_check_premium_user");
+
+        if( LicensePersist.getPremiumUser(m_act)){
+
+            mIsPremium = true;
+            mLicenseSummary = "Premium user registered with account: "
+                    +LicensePersist.getLicenseAccount(m_act);
+            mListener.licenseResult( LicenseResult.PREMIUM_USER);
+        }
+        else
+            step_3_local_check_early_adopter();
+    }
+    private static void step_3_local_check_early_adopter(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_3_local_check_early_adopter");
+
+        try {
+//            if( false ){// LicensePersist.isEarlyAdopter(m_act)){
+            if( LicensePersist.isEarlyAdopter(m_act)){
+
+                mIsPremium = true;
+                mLicenseSummary = "Early adopter registered with account: "
+                        +LicensePersist.getLicenseAccount(m_act);
+                mListener.licenseResult( LicenseResult.EARLY_ADOPTER);
+            }
+            else
+                step_4a_check_concurrence_with_terms();
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+        }
+    }
+
+    private static void step_4a_check_concurrence_with_terms() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_4a_check_concurrence_with_terms");
+
+        if( LicensePersist.getLegalAgree(m_act)){
+
+            step_4b_set_master_account();
+
+        }else{
+
+            String message = "By using this application you agree to "+AppSpecific.TOC_HREF_URL
+                    +" and "+AppSpecific.PP_HREF_URL;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+            builder.setTitle("Please confirm Terms and Conditions and Privacy Policy");
+            builder.setMessage( Html.fromHtml(message));
+            builder.setIcon(AppSpecific.small_icon);
+
+            builder.setPositiveButton("I Agree", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int labelIndex) {
+
+                    LicensePersist.setLegalAgree(m_act, true);
+
+                    step_4b_set_master_account();
+                }
+
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+
+                    mListener.licenseResult( LicenseResult.REJECTED_TERMS);
+                    dialog_alert.cancel();
+                    // All done here, calling class will take over with returned result
+                }
+            });
+            dialog_alert = builder.create();
+            dialog_alert.show();
+
+            // Activate the HTML
+            TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private static void step_4b_set_master_account() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_4b_set_master_account");
+
+        mLicenseAccount = LicensePersist.getLicenseAccount(m_act);
+        if( mLicenseAccount.isEmpty()){
+
+            final List<String> stringMenu = new ArrayList<String>();
+
+            Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+
+            Account[] myAccounts = AccountManager.get(m_act).getAccounts();
+
+            /* We only want "com.google" accounts, example next line
+             * myAccount.type == com.google, name == matt.kraus@nuvolect.com
+             * myAccount.type == com.linkedin.android, name == mr.matt.kraus@gmail.com
+             * myAccount.type == com.google.android.legacyimap, name == mattkraus@yahoo.com
+             * myAccount.type == com.dropbox.android.account, name == matt.kraus@nuvolect.com
+             */
+
+            for (Account myAccount : myAccounts) {
+
+                if ( myAccount.type.contentEquals("com.google")
+                        && EMAIL_PATTERN.matcher(myAccount.name).matches()){
+
+                    stringMenu.add(myAccount.name.toLowerCase(Locale.US));
+                }
+            }
+            if( stringMenu.size() == 1){
+
+                String myAccount = stringMenu.get(0);
+                String md5 = LicenseUtil.md5(myAccount);
+                Persist.setAccountName( m_act, myAccount);
+                LicensePersist.setLicenseAccount(m_act, myAccount);
+
+                step_5_check_for_whitelist_user();
+            }else{
+                // Multiple accounts, user must choose one
+
+                final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+                builder.setIcon(AppSpecific.small_icon);
+                builder.setTitle(
+                        "Select an account to associate with your license")
+                        .setItems( items, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String myAccount = stringMenu.get(which);
+                                String md5 = LicenseUtil.md5(myAccount);
+                                Persist.setAccountName( m_act, myAccount);
+                                LicensePersist.setLicenseAccount(m_act, myAccount);
+
+                                step_5_check_for_whitelist_user();
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }else{
+
+            // User has a master account, proceed to next step
+            step_5_check_for_whitelist_user();
+        }
+    }
+
+    static void step_5_check_for_whitelist_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_5_check_for_whitelist_user");
+
+        String whiteListAccount = Whitelist.onWhitelist(m_act);
+
+        if( ! whiteListAccount.isEmpty()) {
+
+            mIsPremium = true;
+            mLicenseSummary = "Whitelist user: " +whiteListAccount;
+            mListener.licenseResult( LicenseResult.WHITELIST_USER);
+            // All done here, calling class will take over with returned result
+        }else{
+
+            step_6_check_for_premium_user();
+        }
+    }
+
+    /**
+     * Earlier we checked persisted data for a premium user.  This method checks with the
+     * SSLM for a premium user.  If the SSLM is not installed it will carry on to the
+     * next step.
+     */
+    static void step_6_check_for_premium_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_6_check_for_premium_user");
+
+        //Silent check with SSLM (if it is installed) for a premium license
+
+        // Build an encrypted package with license account
+        JSONObject jPackage = new JSONObject();
+        String cryptPackage = "";
+        try {
+            jPackage.put(LConst.LICENSE_ACCOUNT, LicensePersist.getLicenseAccount(m_act));
+            cryptPackage = SimpleCrypto.encrypt(LConst.CS_PASSPHRASE, jPackage.toString());
+        } catch (JSONException e) {
+            LogUtil.logException(m_act, LogType.JSON, e);
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogType.CRYPT, e);
+        }
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(LConst.SS_INTENT_GET);
+        sendIntent.setType(LConst.LICENSE_MIME_TYPE);
+        sendIntent.putExtra(LConst.CLIENT_APP_SECRET, cryptPackage);
+        sendIntent.putExtra(LConst.CLIENT_APP_NAME, AppSpecific.APP_NAME);
+
+        if( LicenseClient.isIntentAvailable(m_act, sendIntent)){
+
+            if(DEBUG)LogUtil.log( "LicenseManager: step 6, ss is installed, checking for license");
+            m_act.startActivity(sendIntent);
+            m_act.startActivityForResult(sendIntent, CConst.LICENSE_CHECK_ACTION);
+        }
+        else{
+
+            if(DEBUG)LogUtil.log( "LicenseManager: step 6, ss is NOT installed");
+            step_7_check_for_early_adopter_user(m_act);
+        }
+    }
+
+    public static void step_6_confirmed_premium_user(Activity act, String clearTextPackage){
+
+        mIsPremium = true;
+        String hardwareId = LicenseUtil.getUniqueInstallId(act);
+        LicensePersist.setPremiumUser(act, true, hardwareId);
+        String sku_details = "";
+        String sku_purchase = "";
+
+        try {
+            JSONObject jobj = new JSONObject(clearTextPackage);
+            sku_purchase = jobj.getString(LConst.SKU_PURCHASE);
+            sku_details = jobj.getString(LConst.SKU_DETAILS);
+        } catch (JSONException e) {
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+        }
+
+        LicensePersist.setLicenseSku(act, sku_purchase);
+        mLicenseSummary = "Premium user: " +LicensePersist.getLicenseAccount(act)
+                +"\n"+sku_details;
+        mListener.licenseResult( LicenseResult.PREMIUM_USER);
+    }
+
+    public static void step_7_check_for_early_adopter_user(Activity act){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_7_check_for_early_adopter_user");
+
+        m_act = act;
+
+        //TODO Add SKU for early adopter to upgrade at minimum fee
+        /**
+         * Set AppSpecific.EARLY_ADOPTER_PERIOD to false when beta phase ends.
+         * This will allow existing early adopters to continue to use the app free
+         * and new users will have the standard free/premium purchase pattern.
+         */
+
+        if( AppSpecific.EARLY_ADOPTER_PERIOD){
+            try {
+
+                LicensePersist.setEarlyAdopter(m_act);
+            } catch (Exception e) {
+                LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+            }
+        }
+
+        try {
+//                if( false ){// for testing
+            if( LicensePersist.isEarlyAdopter(m_act)) {
+
+                mIsPremium = true;
+                mLicenseSummary = "Early adopter user: " +LicensePersist.getLicenseAccount(m_act);
+                mListener.licenseResult( LicenseResult.EARLY_ADOPTER);
+                // All done here, calling class will take over with returned result
+            }
+            else{
+
+                step_8_eval_expired_or_ongoing();
+            }
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+        }
+    }
+
+    static void step_8_eval_expired_or_ongoing(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_8_eval_expired_or_ongoing");
+
+        // Check if there is eval time remaining
+        if( LicensePersist.evalExpired(m_act)){
+
+            mIsPremium = false;
+            mLicenseSummary = "Evaluation expired: " +LicensePersist.getLicenseAccount(m_act);
+
+            mListener.licenseResult( LicenseResult.EVAL_EXPIRED);
+            // All done here, calling class will take over with returned result
+        }
+        else{
+
+            mLicenseSummary = "Evaluation ongoing: " +LicensePersist.getLicenseAccount(m_act);
+            mListener.licenseResult( LicenseResult.EVAL_USER);
+            mIsPremium = true;
+            // All done here, calling class will take over with returned result
+        }
+    }
+
+    /**
+     * Present a dialog informing the user their evaluation has expired with instructions
+     * to buy or acquire a license.
+     * @param act
+     */
+    public static void evalExpiredDialog(final Activity act){
+
+        String message =
+                "You can buy or fetch an existing license with the Secure Suite License Manager, "
+                +"or continue to use the app without premium features." ;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(act);
+        builder.setTitle("App evaluation has expired");
+        builder.setMessage( Html.fromHtml(message));
+        builder.setIcon(R.drawable.ss_small_icon);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton("License Manager", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                Intent i = new Intent( m_act, GooglePlayActivity.class);
+                m_act.startActivity(i);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                dialog_alert.cancel();
+            }
+        });
+        dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Display a dialog informing the user that this version of the app is no longer functional
+     * and that they should upgrade.
+     * @param act
+     */
+    public static void appTimeBombDialog(final Activity act){
+
+        String message = "This application version has expired, please upgrade: "
+                +AppSpecific.GOOGLE_PLAY_HREF_URL;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+        builder.setTitle("Application version has expired");
+        builder.setMessage( Html.fromHtml(message));
+        builder.setIcon(AppSpecific.small_icon);
+        builder.setCancelable(false);
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                dialog_alert.cancel();
+                act.finish();
+            }
+        });
+        dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Check if a custom intent such as the Secure Suite LM app is installed
+     * @param ctx
+     * @param action
+     * @return
+     */
+    public static boolean isIntentAvailable(Context ctx, Intent intent) {
+        final PackageManager mgr = ctx.getPackageManager();
+        List<ResolveInfo> list =
+                mgr.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+}

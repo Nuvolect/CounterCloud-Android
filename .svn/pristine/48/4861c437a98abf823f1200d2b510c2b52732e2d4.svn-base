@@ -1,0 +1,133 @@
+package com.nuvolect.countercloud.license;
+
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.util.ActionBarUtil;
+import com.nuvolect.countercloud.util.LogUtil;
+
+/**
+ * Present UI.  Launch the Secure Suite app if if the user does not have it
+ * start Google Play.
+ */
+public class AppUpgradeActivity extends Activity {
+
+    private Activity m_act;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LogUtil.log("UpgradeActivity.onCreate");
+
+        m_act = this;
+
+        setContentView(R.layout.app_upgrade_activity);
+
+        ActionBarUtil.showActionBarUpButton(m_act);
+
+        TextView tv = (TextView) findViewById(R.id.productNameTv);
+        tv.setText(AppSpecific.APP_NAME+" Android License");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LogUtil.log( "UpgradeActivity.onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LogUtil.log( "UpgradeActivity.onResume");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch( id ){
+
+        case android.R.id.home:{
+            finish();
+            return true;
+        }
+        default:
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     *
+     * @param act
+     */
+    public static void launchMarketApp(Activity act) {
+        Uri uri = AppSpecific.APP_GOOGLE_PLAY_URI;
+        Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+            act.startActivity(myAppLinkToMarket);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(act, " unable to find market app", Toast.LENGTH_LONG).show();
+            launchMarketWeb( act);
+        }
+    }
+
+    public static void launchMarketWeb(Activity act) {
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(AppSpecific.APP_GOOGLE_PLAY_URL));
+        act.startActivity(i);
+    }
+
+    public void termsButton(View view) {
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(AppSpecific.APP_TERMS_URL));
+        m_act.startActivity(i);
+    }
+
+    public void privacyButton(View view) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(AppSpecific.APP_PRIVACY_URL));
+        m_act.startActivity(i);
+    }
+
+    public void moreInfoButton(View view) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(AppSpecific.APP_INFO_URL));
+        m_act.startActivity(i);
+    }
+
+    public void buyButton(View view) {
+
+        LicenseManager.getInstance(m_act).purchaseLicense(m_act, AppSpecific.APP_SKU);
+    }
+
+    /**
+     * As of May 2015, static testing is broken and also disrupts standard sku purchases
+     * @param view
+     */
+    public void onClickTest_android_test_purchased(View view) {
+//        LicenseManager.getInstance(m_act).purchaseLicense(m_act, "android.test.purchased");
+    }
+
+    public void onClickTest_android_test_canceled(View view) {
+//        LicenseManager.getInstance(m_act).purchaseLicense(m_act, "android.test.canceled");
+    }
+
+    public void onClickTest_android_test_refunded(View view) {
+//        LicenseManager.getInstance(m_act).purchaseLicense(m_act, "android.test.refunded");
+    }
+
+    public void onClickTest_android_test_unavailable(View view) {
+//        LicenseManager.getInstance(m_act).purchaseLicense(m_act, "android.test.unavailable");
+    }
+}

@@ -1,0 +1,76 @@
+package com.nuvolect.countercloud.util;
+
+import android.content.Context;
+import android.util.Log;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+public class LogUtil {
+
+    public static final boolean DEBUG = false;
+    public static final boolean VERBOSE = DEBUG;
+    public enum LogType {
+        NIL,
+        ANALYTICS,
+        CLOUD_MAIN_ACTIVITY,
+        CLOUD_MAIN_FRAGMENT,
+        CLOUD_MANAGER_FRAGMENT,
+        CRYPT,
+        EVENT_LOG_FRAGMENT,
+        EXPORT_EVENT_LOG,
+        IN_APP_PAYMENT,
+        LICENSE_UTIL,
+        WORKER, JSON, BETTER_CRYPTO, LICENSE_MANAGER, WHATS_NEW, UTIL, APP_SURVEY_FRAGMENT, SHOW_TIPS, APP_SURVEY, REST, WEB_SERVER,
+        }
+
+    /**
+     * Post a message to the developer console if VERBOSE is enabled.
+     * @param log
+     */
+    public static void log(String log){
+
+        if(VERBOSE)
+            Log.v(Util.TAG, log);
+    }
+
+    public static void log(LogType tag, String log){
+
+        if(VERBOSE)
+            Log.v(Util.TAG, tag.toString()+", "+log);
+    }
+
+    /**
+     * Put exception in Android Logcat.
+     * Inform google analytics.
+     *
+     * @param ctx
+     * @param logType
+     * @param e
+     */
+    public static void logException(Context ctx, LogType logType, Exception e) {
+
+        Analytics.send(ctx, "Exception", logType.toString(), e.getLocalizedMessage(), 1);
+
+        logException( logType, e);
+    }
+    /**
+     * Put exception in Android Logcat
+     *
+     * @param logType
+     * @param e
+     */
+    public static void logException(LogType logType, Exception e) {
+
+        e.printStackTrace(System.err);
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        log( logType,  "ERROR Exception: "+sw.toString());
+    }
+
+    public static void e(String tag, String string) {
+
+        if(VERBOSE)
+            Log.e( Util.TAG, tag+", "+ string);
+    }
+}

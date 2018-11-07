@@ -1,0 +1,50 @@
+package com.nuvolect.countercloud.license;
+
+import android.net.Uri;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.main.CConst;
+import com.nuvolect.countercloud.util.BetterCrypto;
+
+/**
+ * Details of the license specific to this app. Keep separate from other license classes
+ * to enable plug-in-play ease of maintenance.
+ */
+public class AppSpecific {
+
+    public static String APP_CRYP_SEED                = "#4!YrErd2#AvXOcL51SS";
+    public static String APP_CRYP_SEED_HEX            = "4f516651137db395a95151886f027fd8";
+
+    public final static int small_icon                = R.drawable.cc_small_icon;// 96 x 96
+    public final static String GOOGLE_PLAY_HREF_URL   = CConst.CC_GOOGLE_PLAY_HREF_URL;
+    public final static String TOC_HREF_URL           = CConst.CC_TOC_HREF_URL;
+    public final static String PP_HREF_URL            = CConst.CC_PP_HREF_URL;
+
+    public final static String APP_GOOGLE_PLAY_URL    = "https://play.google.com/store/apps/details?id=com.nuvolect.countercloud";
+    public static final String APP_TERMS_URL          = "https://nuvolect.com/countercloud_terms/";
+    public static final String APP_INFO_URL           = "https://nuvolect.com/countercloud/";
+    public static final String APP_HELP_URL           = "https://nuvolect.com/countercloud_help/";
+    public static final String APP_PRIVACY_URL        = "https://nuvolect.com/privacy/";
+    public final static Uri APP_GOOGLE_PLAY_URI       = Uri.parse("market://details?id=com.nuvolect.countercloud");
+
+    public static final int EVAL_DAYS                 = 31;
+    public static final long EVALUATION_PERIOD_MS     = EVAL_DAYS * 24 * 60 * 60 * 1000;
+    public static final String APP_NAME               = "CounterCloud";
+    public static final String APP_SKU                = "cc_single_user_01";
+    public static final boolean EARLY_ADOPTER_PERIOD  = false;
+
+    public static String[] PREMIUM_PITCH_LIST = {
+            "Premium license will show Cloud events here",
+            "Free is great... premium is better",
+            "Get Premium: More features",
+            "Premium App means Premium support",
+            "Premium App: No ads"
+    };
+    private static String cryptoPublicKey="complete me";
+
+    /** Return a clear copy of the public key */
+    public static String getClearPublicKey() throws Exception{
+
+        return BetterCrypto.decrypt(APP_CRYP_SEED_HEX, cryptoPublicKey);
+    }
+}

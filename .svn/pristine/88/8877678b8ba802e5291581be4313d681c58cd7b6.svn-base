@@ -1,0 +1,108 @@
+package com.nuvolect.countercloud.main;//
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.data.Persist;
+import com.nuvolect.countercloud.license.LicensePersist;
+import com.nuvolect.countercloud.util.NotificationUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Manage a list of developer commands.  This dialog is only displayed for users on the whitelist.
+ */
+public class DeveloperDialog {
+
+    private static int notifNum = 0;
+
+    private static Activity m_act;
+    /**
+     * True when the developers menu is disabled, ie demos and videos
+     */
+    private static boolean m_developerIsEnabled = true;
+
+    public static boolean isEnabled() {
+        return m_developerIsEnabled;
+    }
+
+    /**
+     * Developer menu: in menu order.  Replaces '_' with ' ' on menu.
+     */
+    public static enum DevMenu {
+        Temporary_disable_developer_menu,
+        Decrement_app_version,
+        Clear_data_close_app,
+        Create_Notification,
+        Publish_App_Survey,
+    };
+
+    public static void start(Activity act) {
+
+        m_act = act;
+
+        final List<String> stringMenu = new ArrayList<String>();
+
+        for( DevMenu menuItem : DevMenu.values()){
+
+            String item = menuItem.toString().replace('_', ' ');
+            stringMenu.add( item);
+        }
+        final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+        builder.setTitle("Developer Menu")
+                .setItems( items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        DevMenu menuItem = DevMenu.values()[which];
+
+                        switch( menuItem){
+
+                            case Temporary_disable_developer_menu:
+                                m_developerIsEnabled = false;
+                                m_act.invalidateOptionsMenu();
+                                break;
+                            case Decrement_app_version:{
+
+                                int appVersion = LicensePersist.getAppVersion(m_act);
+                                if( --appVersion < 1)
+                                    appVersion = 1;
+                                LicensePersist.setAppVersion(m_act, appVersion);
+                                Toast.makeText(m_act, "App version: " + appVersion, Toast.LENGTH_LONG).show();
+                                break;
+                            }
+                            case Clear_data_close_app:{
+
+                                Persist.clearAll(m_act);
+                                LicensePersist.clearAll(m_act);
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_act);
+                                pref.edit().clear().commit();
+                                m_act.finish();
+                                break;
+                            }
+                            case Create_Notification:{
+
+                                ++notifNum;
+                                NotificationUtil.pushNotification(m_act,
+                                        "Title part: " + notifNum, "Small text part: " + notifNum);
+                                break;
+                            }
+                            case Publish_App_Survey:{
+                                WorkerCommand.publishAppSurvey(m_act);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+}

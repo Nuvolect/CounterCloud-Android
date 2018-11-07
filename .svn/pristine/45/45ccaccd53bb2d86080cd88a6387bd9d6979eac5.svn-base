@@ -1,0 +1,132 @@
+package com.nuvolect.countercloud.license;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.provider.Settings;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import com.nuvolect.countercloud.R;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class LicenseUtil {
+
+	/**
+	 * Return a unique string for the device.  This string only changes when you wipe the device
+	 * and reinstall Android.
+	 * @param context
+	 * @return unique device ID string
+	 */
+	public static String getUniqueInstallId(Context context) {
+
+		String deviceId = Settings.Secure.getString( context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		return deviceId;
+	}
+
+    public static String  md5(String plaintext){
+
+        MessageDigest m;
+        try {
+            m = MessageDigest.getInstance("MD5");
+            m.reset();
+            m.update(plaintext.getBytes());
+            byte[] digest = m.digest();
+            BigInteger bigInt = new BigInteger(1,digest);
+            String hashtext = bigInt.toString(16);
+            // Now we need to zero pad it if you actually want the full 32 chars.
+            while(hashtext.length() < 32 ){
+                hashtext = "0"+hashtext;
+            }
+            return hashtext;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static AlertDialog agreeToTerms(final Activity act){
+
+        String message = "By using this application you agree to "+AppSpecific.TOC_HREF_URL
+                +" and "+AppSpecific.PP_HREF_URL;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(act);
+        builder.setTitle("Please confirm Terms and Conditions and Privacy Policy");
+        builder.setMessage( Html.fromHtml(message));
+        builder.setIcon(AppSpecific.small_icon);
+
+        builder.setPositiveButton("I Agree", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int labelIndex) {
+
+                LicensePersist.setLegalAgree(act, true);
+            }
+
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                act.finish();
+            }
+        });
+        AlertDialog dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+
+        return dialog_alert;
+    }
+
+    /**
+     * Display a dialog to encourage upgrade to premium.  This might be called with a
+     * conditional to pest, to make sure we don't pester the user too often.
+     * @param act
+     * @return
+     */
+    public static AlertDialog premiumFeatureDialog(final Activity act){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(act);
+        LayoutInflater inflater = act.getLayoutInflater();
+        View view = inflater.inflate(R.layout.premium_features, null);
+
+        builder.setTitle("Thanks for giving us a try!");
+        builder.setIcon(AppSpecific.small_icon);
+        builder.setView( view );
+
+        builder.setPositiveButton("Upgrade", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                GooglePlayActivity.launchMarketApp(act);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                //Do nothing, dialog will cancel automatically
+            }
+        });
+        AlertDialog dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView preLinksTv = (TextView) view.findViewById(R.id.premium_features_prelinks);
+        preLinksTv.setText(Html.fromHtml(LConst.SS_GOOGLE_PLAY_HREF_URL));
+        preLinksTv.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView postLinksTv = (TextView) view.findViewById(R.id.premium_features_postlinks);
+        postLinksTv.setText(Html.fromHtml(
+                AppSpecific.APP_GOOGLE_PLAY_HREF_URL+"<br><br>"+
+                AppSpecific.APP_NUVOLECT_HREF_URL+"<br>"));
+        postLinksTv.setMovementMethod(LinkMovementMethod.getInstance());
+
+        return dialog_alert;
+    }
+}

@@ -1,0 +1,391 @@
+package com.nuvolect.countercloud.license;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.nuvolect.countercloud.util.BetterCrypto;
+import com.nuvolect.countercloud.util.JsonUtil;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.SimpleCrypto;
+import com.nuvolect.countercloud.util.TimeUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Random;
+
+@SuppressLint("CommitPrefEdits")
+public class LicensePersist {
+
+    private static final String PERSIST_NAME           = "license_persist";
+
+    // Persist keys
+    private static final String ACCOUNT_MD5            = "account_md5";
+    private static final String EARLY_ADOPTER          = "early_adopter";
+    private static final String EARLY_ADOPTER_CRYP     = "pzdvsnaxqeafuvjdtqpj";
+    private static final String EARLY_ADOPTER_CRYP_HEX = "16ba96b4e2fa961e2620c81e945309ac";
+    private static final String EVAL_START             = "eval_start";
+    private static final String LAST_PITCH             = "last_pitch";
+    private static final String LEGAL_AGREE            = "legal_agree";
+    private static final String LEGAL_AGREE_TIME       = "legal_agree_time";
+    private static final String LICENSE_ACCOUNT_NAME   = "license_account_name";
+    private static final String LICENSE_RESULT         = "license_result";
+    private static final String LICENSE_SKU            = "license_sku";
+    private static final String LAST_NAG_TIME          = "last_nag_time";
+    private static final String PREMIUM_USER           = "premium_user";
+    private static final String UNIQUE_INSTALL_ID      = "unique_install_id";
+    public static final CharSequence LICENSE_UPGRADE   = "license_upgrade";// match settings.xml
+
+    /**
+     * Remove all persistent data.
+     */
+    public static void clearAll(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().clear().commit();
+    }
+
+    public static boolean getLegalAgree(Context ctx) {
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        return pref.getBoolean(LEGAL_AGREE, false);
+    }
+
+    public static void setLegalAgree(Context ctx, boolean legalAgree){
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putBoolean(LEGAL_AGREE, legalAgree).commit();
+        pref.edit().putLong(LEGAL_AGREE_TIME, System.currentTimeMillis()).commit();
+    }
+
+    public static void setLicenseAccount(Context ctx, String accountName){
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        String cryptAccount = BetterCrypto.encrypt(ctx, accountName);
+        pref.edit().putString(LICENSE_ACCOUNT_NAME, cryptAccount).commit();
+    }
+
+    /**
+     * Get account that is associated with the license
+     */
+    public static String getLicenseAccount(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        String cryptAccount = pref.getString(LICENSE_ACCOUNT_NAME, "");
+        if( cryptAccount.isEmpty())
+            return "";
+        else{
+
+            String clearText = BetterCrypto.decrypt(ctx, cryptAccount);
+            //CRYPTOPATCH BetterCrypto patch, remove next line after transition release
+            setLicenseAccount( ctx, clearText);// Re-encrypt
+
+            return clearText;
+        }
+    }
+
+    public static boolean getPremiumUser(Context ctx) {
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        String uniqueInstallId = BetterCrypto.decrypt(ctx, pref.getString(UNIQUE_INSTALL_ID, ""));
+
+        //CRYPTOPATCH BetterCrypto patch, remove next line after transition release
+        setPremiumUser(ctx, ! uniqueInstallId.isEmpty(), uniqueInstallId);
+
+        if( uniqueInstallId.isEmpty())
+            return false;
+        return uniqueInstallId.contentEquals(LicenseUtil.getUniqueInstallId(ctx))
+                && pref.getBoolean(PREMIUM_USER, false);
+    }
+
+    public static void setPremiumUser(Context ctx, boolean premiumUser, String uniqueInstallId){
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putBoolean(PREMIUM_USER, premiumUser).commit();
+        pref.edit().putString(UNIQUE_INSTALL_ID, BetterCrypto.encrypt( ctx, uniqueInstallId)).commit();
+    }
+
+    /**
+     * Indicate if the evaluation period is ongoing or has ended.
+     * The first time this method is called it saves the current time and returns false.
+     * Subsequent calls compare how much time has elapsed from the start of the eval and if
+     * it is greater than the evaluation period, it returns true;
+     * @param ctx
+     * @return
+     */
+    public static boolean evalExpired(Context ctx) {
+
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+
+        /*
+         * Setup the evaluation if this is the first time called.
+         * 1. Record the evaluation start date
+         */
+        if( pref.getLong(EVAL_START, 0) == 0)
+            pref.edit().putLong(EVAL_START, System.currentTimeMillis()).commit();
+
+        boolean evalTimeExpired
+            = System.currentTimeMillis() - pref.getLong(EVAL_START, 0)  // ms eval has been running
+                > AppSpecific.EVALUATION_PERIOD_MS;                     // ms of eval period
+
+            return evalTimeExpired;
+    }
+
+    public static void diagSetEvalPeriodStart(Context ctx){
+
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().putLong(EVAL_START, 0L ).commit();
+    }
+
+    public static void diagSetEvalPeriodEnd(Context ctx){
+
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().putLong(EVAL_START, System.currentTimeMillis() - AppSpecific.EVALUATION_PERIOD_MS ).commit();
+    }
+
+    /**
+     * Used from a Service or non-ui method when program flow does not go through standard startup,
+     * this somewhat more complex method asses if the user has access to premium features.
+     * For use in an Activity use LicenseManager checkLicense() or LicenseManager.mIsPremium.
+     * @param ctx
+     * @return
+     */
+    public static boolean allowPremiumFeature(Context ctx){
+
+        boolean allow = getPremiumUser(ctx);
+        if( ! allow)
+            try {
+                allow = isEarlyAdopter(ctx);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        if( ! allow)
+            allow = ! evalExpired(ctx);
+        if( ! allow)
+            allow = ! Whitelist.onWhitelist(ctx).isEmpty();
+
+        return allow;
+    }
+
+    /**
+     * Truncated value of the number days remaining.  When the user is within the last day
+     * of the evaluation it will show 0 days remaining.
+     * @param ctx
+     * @return
+     */
+    private static int getEvalDaysRemaining(Context ctx) {
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME, Context.MODE_PRIVATE);
+
+        long msEvalDuration = System.currentTimeMillis() - pref.getLong(EVAL_START, 0);
+        long msPerDay = 1000 * 60 * 60 * 24;
+        int daysRemaining = (int) (AppSpecific.EVAL_DAYS - msEvalDuration / msPerDay);
+        return daysRemaining;
+    }
+
+
+    /**
+     * Return the human readable summary of the current license.
+     * @param ctx
+     * @return
+     */
+    public static String getLicenseSummary(Context ctx) {
+
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        long legalAgreeTime = pref.getLong(LEGAL_AGREE_TIME, 0L);
+
+        LicenseManager.LicenseResult licenseResult = getLicenseResult(ctx);
+        String licenseAccount = LicensePersist.getLicenseAccount(ctx);
+        String summary = "";
+
+        switch( licenseResult){
+
+        case EARLY_ADOPTER:
+            summary = "License: Early adopter"
+                    +"\nLicense account: "+licenseAccount
+                    +"\nUser accepted terms "+ TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+
+        case EVAL_EXPIRED:
+            summary = "License: Evaluation expired"
+                    +"\nLicense account: "+licenseAccount
+                    +"\nUser accepted terms "+TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+        case EVAL_USER:
+            summary = "License: Evaluation, days remaining: "+getEvalDaysRemaining(ctx)
+                    +"\nLicense account: "+licenseAccount
+                    +"\nUser accepted terms "+TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+        case NIL:
+            summary = "ERROR NIL license type";
+            break;
+        case PREMIUM_USER:
+            summary = "License: Premium, "+LicensePersist.getLicenseSku(ctx)
+                    +"\nLicense account: "+licenseAccount
+                    +"\nUser accepted terms "+TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+        case REJECTED_TERMS:
+            summary = "User rejected terms "+TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+        case TIME_BOMB:
+            summary = "Application version is no longer valid";
+            break;
+        case WHITELIST_USER:
+            summary = "License: Whitelist"
+                    +"\nLicense account: "+licenseAccount
+                    +"\nUser accepted terms "+TimeUtil.friendlyTimeString(legalAgreeTime);
+            break;
+        default:
+            break;
+        }
+        return summary;
+    }
+
+    public static void setLicenseResult(Context ctx, LicenseManager.LicenseResult licenseResult) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putInt(LICENSE_RESULT, licenseResult.ordinal()).commit();
+    }
+    public static LicenseManager.LicenseResult getLicenseResult(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        return LicenseManager.LicenseResult.values()[pref.getInt(LICENSE_RESULT, 0)];
+    }
+    /** Record license account, encrypt it and save to test if user is a free user, i.e., early adopter */
+    public static void setEarlyAdopter(Context ctx) throws Exception {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        String licenseAccount = getLicenseAccount(ctx);
+        String cypherUser = BetterCrypto.encrypt(EARLY_ADOPTER_CRYP_HEX, licenseAccount);
+        pref.edit().putString(EARLY_ADOPTER, cypherUser).commit();
+    }
+    /** Remove early adopter tag, isEarlyAdopter() will return false */
+    public static void clearEarlyAdopter(Context ctx) throws Exception {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().remove(EARLY_ADOPTER).commit();
+    }
+    /** Record license account, encrypt it and save to test if user is a free user, i.e., early adopter */
+    public static boolean isEarlyAdopter(Context ctx){
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+
+        String cryptLicenseAccount = pref.getString(EARLY_ADOPTER, "");
+        if( cryptLicenseAccount.isEmpty())
+            return false;
+
+        String licenseAccount = "";
+        try {
+            licenseAccount = BetterCrypto.decrypt(EARLY_ADOPTER_CRYP_HEX, cryptLicenseAccount);// has cryp patch
+            //CRYPTOPATCH BetterCrypto patch, remove next line after transition release
+            if( licenseAccount == null)
+                licenseAccount = SimpleCrypto.decrypt(EARLY_ADOPTER_CRYP, cryptLicenseAccount);// has cryp patch
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return licenseAccount.contentEquals(getLicenseAccount(ctx));
+    }
+
+    public static void setLicenseSku(Context ctx, String clearSku) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
+        pref.edit().putString(LICENSE_SKU, BetterCrypto.encrypt(ctx, clearSku)).commit();
+    }
+    public static String getLicenseSku(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        String sku = BetterCrypto.decrypt(ctx, pref.getString(LICENSE_SKU, ""));
+        //CRYPTOPATCH BetterCrypto patch, remove next line after transition release
+        setLicenseAccount(ctx, sku);// Re-encrypt
+
+        return sku;
+    }
+
+    public static void setAccountMd5(Context ctx, String md5) {
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME, Context.MODE_PRIVATE);
+        pref.edit().putString(ACCOUNT_MD5, md5).commit();
+    }
+    public static String getAccountMd5(Context ctx) {
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        return pref.getString(ACCOUNT_MD5, "");
+    }
+
+    /**
+     * Return a random string (pitch) that is not the same as the last string returned.
+     * @param ctx
+     * @return String
+     */
+    public static String getRandomUpgradePitch(Context ctx){
+
+        if( AppSpecific.PREMIUM_PITCH_LIST.length <= 0){
+            return "Consider a Premium Upgrade";
+        }
+        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
+        int lastPitch = pref.getInt(LAST_PITCH, 0);
+
+        Random random = new Random();
+
+        int pitchIndex = random.nextInt(AppSpecific.PREMIUM_PITCH_LIST.length);
+
+        while( pitchIndex == lastPitch ){
+
+            pitchIndex = random.nextInt(AppSpecific.PREMIUM_PITCH_LIST.length);
+        }
+        pref.edit().putInt(LAST_PITCH, pitchIndex).commit();
+
+        return AppSpecific.PREMIUM_PITCH_LIST[ pitchIndex ];
+    }
+
+    /**
+     * Keep track of when you are nagging the user on various issues.
+     * Return false when current time is within a sincePeriod, it is not time to nag.
+     * This method can can be called multiple times and will continue to return false until outside
+     * of the pest period when it returns true a single time.
+     *
+     * @param ctx
+     * @param key key to find last nag time
+     * @param noNagPeriodMs  How long the period is in ms
+     * @return
+     */
+    public static boolean timeToNagUser(Context ctx, String key, long noNagPeriodMs) {
+
+        long currentTime = System.currentTimeMillis();
+
+        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME, Context.MODE_PRIVATE);
+        try {
+
+            JSONObject object = new JSONObject( pref.getString(LAST_NAG_TIME, "{}"));
+            if( object.has( key )){
+
+                long timeSinceLastNag = currentTime - JsonUtil.getLong( key, object );
+
+                LogUtil.log( "Seconds since last nag: "+timeSinceLastNag/1000 );
+
+                /**
+                 * Check if we are outside the no-nag period
+                 */
+                if( timeSinceLastNag > noNagPeriodMs){
+
+                    /**
+                     * Time to nag the user again.
+                     */
+                    object.put(key, currentTime);
+                    pref.edit().putString(LAST_NAG_TIME, object.toString()).commit();
+
+                    return true;
+                }else{
+                    /**
+                     * You are a pest and within the pest period, return true
+                     */
+                    return false;
+                }
+            }else{
+                /**
+                 * First time, definately time to nag the user
+                 */
+                object.put(key, currentTime);
+                pref.edit().putString(LAST_NAG_TIME, object.toString()).commit();
+
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+}

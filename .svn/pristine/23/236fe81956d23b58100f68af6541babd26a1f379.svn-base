@@ -1,0 +1,472 @@
+package com.nuvolect.countercloud.main;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.data.Persist;
+import com.nuvolect.countercloud.license.AppSpecific;
+import com.nuvolect.countercloud.license.GooglePlayActivity;
+import com.nuvolect.countercloud.license.LConst;
+import com.nuvolect.countercloud.license.LicenseClient;
+import com.nuvolect.countercloud.license.LicenseClient.LicenseCallbacks;
+import com.nuvolect.countercloud.license.LicenseClient.LicenseResult;
+import com.nuvolect.countercloud.license.LicensePersist;
+import com.nuvolect.countercloud.license.LicenseUtil;
+import com.nuvolect.countercloud.util.ActionBarUtil;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+import com.nuvolect.countercloud.util.SimpleCrypto;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * An activity representing a summary view of cloud data.
+ * <p>
+ * This activity is mostly just a 'shell' activity containing nothing more than
+ * a {@link CloudManagerFragment}.
+ */
+public class CloudMainActivity extends FragmentActivity
+implements CloudMainFragment.Callbacks {
+
+    private final static boolean DEBUG = LogUtil.DEBUG;
+    static Activity m_act;
+    static Context m_ctx;
+    CloudMainFragment m_main_frag;
+    public static boolean mIsPremium = false; // Does the user have the premium upgrade?
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onCreate()");
+
+        m_act = this;
+        m_ctx = getApplicationContext();
+
+        // Action bar progress setup.  Needs to be called before setting the content view
+        m_act.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
+        /**
+         * Order is important.  The GUI and fragment creation must occur before
+         * the license manager calls the secure suite license manager for existing purchases.
+         */
+        setContentView(R.layout.cloud_main_activity);
+
+        startGui();
+
+        LicenseClient.checkLicense(m_act, mLicenseUtilListener);
+    }
+
+    /**
+     * Main callback with license results with support from onActivityResult().
+     */
+    LicenseCallbacks mLicenseUtilListener = new LicenseCallbacks(){
+
+        @Override
+        public void licenseResult(LicenseResult licenseResult) {
+
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "license result: "+licenseResult.toString());
+            LicensePersist.setLicenseResult(m_ctx, licenseResult);
+
+            switch ( licenseResult){
+            case NIL :
+                break;
+            case TIME_BOMB:
+                LicenseClient.appTimeBombDialog(m_act);
+                break;
+            case REJECTED_TERMS :
+                m_act.finish();
+                break;
+            case PREMIUM_USER :
+            case EARLY_ADOPTER:
+            case WHITELIST_USER :
+                mIsPremium = true;
+                break;
+                case EVAL_USER : {
+                    mIsPremium = true; // Only true during the evaluation period
+                    long sinceTime = (AppSpecific.EVAL_DAYS-1) * 24 * 60 * 60 * 1000;// at the start and with a day remaining
+                    boolean pest = Persist.getPestCheck(m_ctx, Persist.PEST_EVAL_ONGOING, sinceTime);
+                    if (!pest)
+                        LicenseUtil.premiumFeatureDialog(m_act);
+                    break;
+                }
+                case EVAL_EXPIRED :{
+                    mIsPremium = false;
+                    long sinceTime = 14 * 24 * 60 * 60 * 1000;// Only pest the user twice a month
+                    boolean pest = Persist.getPestCheck(m_ctx, Persist.PEST_EVAL_EXPIRED, sinceTime);
+                    if( ! pest )
+                        LicenseClient.evalExpiredDialog(m_act);
+                    break;
+                }
+            default:
+                break;
+            }
+            Analytics.send( m_ctx,
+                    Analytics.ACT+"CloudMainActivity",
+                    Analytics.LICENSE_ACTIVITY,
+                    licenseResult.toString(),
+                    1L);
+        }
+    };
+
+    void startGui(){
+
+        // Show the Up button in the action bar.
+        ActionBarUtil.homeAsUpEnabled(m_act, false);
+
+        if( Persist.getTimeLastUpdate( m_ctx) == 0){
+
+            // Starting for first time, clone google db to track changes
+            WorkerCommand.cloneGoogleDb(m_act);
+
+            // Set default settings
+            PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
+            // Set time
+            Persist.setTimeLastUpdate(m_ctx, System.currentTimeMillis());
+        }
+        WorkerCommand.registerCloudObserver(getApplicationContext());
+
+        ActionBarUtil.showTitleEnabled(m_act, true);
+
+        m_main_frag = startCloudMainFragment();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onSaveInstanceState()");
+    }
+
+    protected void onResume() {
+        super.onResume();
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onResume()");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Analytics.start(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Analytics.stop(this);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onPause()");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.cloud_main_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+        case R.id.menu_accounts:{
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.GOOGLE_ACCOUNTS, 1);
+            // import android.provider.Settings;
+            startActivity(new Intent(Settings.ACTION_SYNC_SETTINGS));
+            break;
+        }
+        case R.id.menu_refresh:{
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.REFRESH, 1);
+            m_main_frag.resetCloudSummary();
+            Toast.makeText(m_act, "Refresh", Toast.LENGTH_SHORT).show();
+            break;
+        }
+        case R.id.menu_security_check:{
+
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.SECURITY_CHECK, 1);
+
+            Intent intent = new Intent(this, CloudManagerActivity.class);
+            intent.putExtra(CConst.ACCOUNT_KEY, CConst.ALL_ACCOUNTS);
+            intent.putExtra(CConst.SECURITY_CHECK, true);
+            startActivity(intent);
+            break;
+        }
+        case R.id.menu_event_log:{
+
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.EVENT_LOG, 1);
+
+            Intent intent = new Intent(this, EventLogActivity.class);
+            startActivity(intent);
+            break;
+        }
+        case R.id.menu_settings:{
+
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.SETTINGS, 1);
+
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            break;
+        }
+        case R.id.menu_help:{
+
+            Analytics.send(getApplicationContext(),
+                    Analytics.ACT+"Main",
+                    Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                    Analytics.HELP, 1);
+
+            String url = "http://www.nuvolect.com/countercloud_help";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+            break;
+        }
+
+        default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onActivityResult()");
+
+        switch( requestCode ){
+
+        case CConst.LICENSE_CHECK_ACTION:{
+
+            if( resultCode == RESULT_OK){
+
+                Bundle activityResultBundle = data.getExtras();
+                String cryp_license = activityResultBundle.getString(LConst.CLIENT_APP_LICENSE);
+                String clearTextPackage="";
+                try {
+                    clearTextPackage = SimpleCrypto.decrypt(LConst.CC_PASSPHRASE, cryp_license);
+                } catch (Exception e) {
+                    LogUtil.logException(m_act, LogType.CRYPT, e);
+                }
+                LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "License check returned: "+clearTextPackage);
+
+                //TODO replace hardcode with a method in LicenseClient
+
+                if( clearTextPackage.contains("cc_sku") || clearTextPackage.contains("ss_sku")){
+
+                    LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "License check premium user confirmed");
+                    LicenseClient.step_6_confirmed_premium_user(m_act, clearTextPackage);
+                }
+                else{
+                    LicenseClient.step_7_check_for_early_adopter_user(m_act);
+                }
+            }
+            else{
+                Toast.makeText(m_act, "License check failed", Toast.LENGTH_SHORT).show();
+                LicenseClient.step_7_check_for_early_adopter_user(m_act);
+                LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "License check failed");
+            }
+            break;
+        }
+        default:
+            if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "ERROR, CloudMainActivity invalid requestCode: "+requestCode);
+            break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    /**
+     * Callback method indicating that the item with the given ID was selected.
+     */
+    @Override
+    public void onAccountEditSelected(String myAccount) {
+
+        Intent intent = new Intent(this, CloudManagerActivity.class);
+        intent.putExtra(CConst.ACCOUNT_KEY, myAccount);
+        startActivity(intent);
+    }
+    /**
+     * Callback method from {@link ContactListFragment.Callbacks} indicating that
+     * data has changed and the fragment should be refreshed
+     */
+    @Override
+    public void onRefreshFragment() {
+
+        if( m_main_frag == null)
+            m_main_frag = startCloudMainFragment();
+        else
+            refreshCloudMainFragment();
+    }
+
+    /**
+     * Developer menu: in menu order.  Replaces '_' with ' ' on menu.
+     */
+    public static enum DevMenu {
+        Free_User_Toggle,
+        Early_Adopter_Toggle,
+        SS_License_Get,
+        Start_SecureSuite_LM,
+        Clear_Data_Close_App,
+    };
+
+    static void developerDialog() {
+
+        final List<String> stringMenu = new ArrayList<String>();
+
+        for( DevMenu menuItem : DevMenu.values()){
+
+            String item = menuItem.toString().replace('_', ' ');
+            stringMenu.add( item);
+        }
+        final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+        builder.setTitle("Developer Menu")
+        .setItems( items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                DevMenu menuItem = DevMenu.values()[which];
+
+                switch( menuItem){
+
+                    case Free_User_Toggle:{
+
+                        LicenseClient.mIsPremium = ! LicenseClient.mIsPremium;
+                        Toast.makeText(m_act, "Is premium user: "
+                                +LicenseClient.mIsPremium, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                case Early_Adopter_Toggle:{
+
+                    try {
+                    if( LicensePersist.isEarlyAdopter(m_ctx))
+                        LicensePersist.clearEarlyAdopter(m_ctx);
+                    else
+                        LicensePersist.setEarlyAdopter(m_ctx);
+
+                    Toast.makeText(m_act, "Is early adopter: "
+                            +LicensePersist.isEarlyAdopter(m_ctx), Toast.LENGTH_SHORT).show();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                case SS_License_Get:{
+
+                    JSONObject jPackage = new JSONObject();
+                    String cryptPackage = "";
+                    try {
+                        jPackage.put(LConst.LICENSE_ACCOUNT, LicensePersist.getLicenseAccount(m_ctx));
+                        cryptPackage = SimpleCrypto.encrypt(LConst.CS_PASSPHRASE, jPackage.toString());
+                    } catch (JSONException e) {
+                        LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+                    } catch (Exception e) {
+                        LogUtil.logException(m_act, LogType.LICENSE_UTIL, e);
+                    }
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(LConst.SS_INTENT_GET);
+                    sendIntent.setType(LConst.LICENSE_MIME_TYPE);
+                    sendIntent.putExtra(LConst.CLIENT_APP_SECRET, cryptPackage);
+                    sendIntent.putExtra(LConst.CLIENT_APP_NAME, AppSpecific.APP_NAME);
+
+                    if( LicenseClient.isIntentAvailable(m_ctx, sendIntent)){
+
+                        m_act.startActivity(sendIntent);
+                        m_act.startActivityForResult(sendIntent, CConst.LICENSE_TEST_ACTION);
+                    }
+                    else{
+                        Toast.makeText(m_ctx, "SecureSuite LM not installed", Toast.LENGTH_LONG).show();
+                        Intent i = new Intent( m_act, GooglePlayActivity.class);
+                        m_act.startActivity(i);
+                    }
+                    break;
+                }
+                case Start_SecureSuite_LM:{
+
+                    Intent intent = new Intent();
+                    intent.setAction(AppSpecific.SS_SHOP_THIS_APP);
+                    m_act.startActivity(intent);
+
+                    break;
+                }
+                case Clear_Data_Close_App:{
+
+                    Persist.clearAll(m_ctx);
+                    LicensePersist.clearAll(m_ctx);
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_ctx);
+                    pref.edit().clear().commit();
+                    m_act.finish();
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void refreshCloudMainFragment(){
+
+        FragmentTransaction ft = m_main_frag.getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.detach(m_main_frag);
+        ft.commit();
+        ft = m_main_frag.getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.attach(m_main_frag);
+        ft.commitAllowingStateLoss();
+    }
+    private CloudMainFragment startCloudMainFragment(){
+
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "startCloudMainFragment()");
+
+        CloudMainFragment fragment = new CloudMainFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.cloud_main_container, fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
+        return fragment;
+    }
+}

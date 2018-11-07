@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_delete_dialog"
+        android:title="Enable delete dialog"
+        android:summary="Last chance dialog before deleting information, premium feature."
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="pref_notify_insert"
+        android:title="Notify cloud additions"
+        android:summary="Use the notification area to show additions to the cloud, premium feature."
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="pref_notify_update"
+        android:title="Notify cloud updates"
+        android:summary="Use the notification area to show updates to the cloud, premium feature."
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="pref_notify_delete"
+        android:title="Notify cloud deletions"
+        android:summary="Use the notification area to show deletions from the cloud, premium feature."
+        android:defaultValue="true" />
+    <Preference
+        android:key="license_upgrade"
+        android:title="CounterCloud license"
+        android:summary="See and upgrade your application license"
+        />
+    <Preference
+        android:key="open_source_license"
+        android:title="Software license information"
+        android:summary="Information about software licenses used in this app"
+        />
+    <Preference
+        android:key="rate_app_google_play"
+        android:title="Rate CounterCloud in Google Play"
+        android:summary="We appreciate your support.\nPlease click here and show us a little lovin by rating us with 5 stars.\n\n"
+        />
+</PreferenceScreen>
+

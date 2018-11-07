@@ -1,0 +1,322 @@
+package com.nuvolect.countercloud.util;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.os.Build;
+import android.os.Environment;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+
+import com.nuvolect.countercloud.main.CConst;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Util {
+
+    public static String TAG = "CounterCloud";
+
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
+
+    @SuppressLint("NewApi")
+    public static int generateViewId(){
+
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
+
+            return Util.preApi17_generateViewId();
+        else
+            return View.generateViewId();
+    }
+
+    /**
+     * Generate a value suitable for use in {@link #setId(int)}.
+     * This value will not collide with ID values generated at build time by aapt for R.id.
+     *
+     * @return a generated ID value
+     */
+    public static int preApi17_generateViewId() {
+        for (;;) {
+            final int result = sNextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                return result;
+            }
+        }
+    }
+
+    /**
+     * Return the passed array if item is in the array or
+     * return a new array including custom item.
+     *
+     * @param array
+     * @param item
+     * @return
+     */
+    public static String[] extendArray(String[] array, String item) {
+
+        // First check if array contains item
+        for(int i = 0; i<array.length; i++)
+            if( array[i].contentEquals(item))
+                return array;
+
+        String[] tmp = new String[ array.length + 1];
+        for(int i = 0; i<array.length; i++)
+            tmp[i] = array[i];
+
+        tmp[array.length] = item;
+
+        return tmp;
+    }
+
+    public static int unitsDpEquiv(Activity act, int unitsDp){
+
+        int equivDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                unitsDp, act.getResources().getDisplayMetrics());
+
+        return equivDp;
+    }
+    public static int unitsSpEquiv(Activity act, int unitsSp){
+
+        int equivDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                unitsSp, act.getResources().getDisplayMetrics());
+
+        return equivDp;
+    }
+    /**
+     * Return the screen width in dp units
+     * @param context
+     * @return float
+     */
+    public static float screenWidthDp(Context context){
+
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        //    float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        return dpWidth;
+    }
+
+    /**
+     * Return the screen width in pixels
+     * @param context
+     * @return
+     */
+    public static float screenWidth(Context context){
+
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        //    float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels ;
+
+        return dpWidth;
+    }
+
+    /**
+     * Create and return a string made from the date and time, to be used in filenames
+     * @return
+     */
+    public static String makeDateTimeFilename(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmm.ss", Locale.US);
+        String fName = sdf.format( System.currentTimeMillis());
+
+        return fName;
+    }
+
+    /**
+     * Generate a time date base folder name, create the folder and return the full path
+     * Return an empty string on error.
+     * @param m_ctx
+     * @return
+     */
+    public static String createTimeStampedBackupFolder(Context m_ctx) {
+
+        // Create the app folder if necessary
+        String appPublicFolder = createAppPublicFolder();
+        if( appPublicFolder.isEmpty())
+            return ""; // error condition
+
+        // Create the time specific folder
+        String folderName = makeDateTimeFilename();
+        String folderPathWithName = Environment.getExternalStorageDirectory()+CConst.FOLDER_NAME+folderName;
+
+        File folder = new File( folderPathWithName );
+        if(!folder.exists()) {
+
+            if(folder.mkdir())  //directory is created;
+                LogUtil.log( "create success: "+folderPathWithName);
+            else{
+                folderPathWithName = "";
+                LogUtil.log( "create ERROR: "+folderPathWithName);
+            }
+        }
+        else{
+            LogUtil.log( "create success: "+folderPathWithName);
+        }
+        return folderPathWithName;
+    }
+
+    /**
+     * Create the application specific folder under /sdcard and return the
+     * path to that folder.  Path includes a trailing slash.
+     * @return
+     */
+    public static String createAppPublicFolder(){
+
+        String appFolderPath = Environment.getExternalStorageDirectory()+CConst.FOLDER_NAME;
+        File appFolder = new File( appFolderPath );
+        if(!appFolder.exists()) {
+
+            if(appFolder.mkdir())  //directory is created;
+                LogUtil.log( "create success: "+appFolderPath);
+            else{
+                LogUtil.log( "create ERROR: "+appFolderPath);
+                return "";
+            }
+        }
+        return appFolderPath;
+    }
+
+    public static void writeFile(File file, String fileContents) {
+
+        try {
+            OutputStream out = null;
+
+            out = new BufferedOutputStream( new FileOutputStream( file));
+
+            out.write(fileContents.getBytes());
+
+            if( out != null)
+                out.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    public static String readFile( Context ctx, File file){
+
+        String fileContents = "";
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            InputStream is = new FileInputStream(file);
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+
+                String s = new String( buffer, 0, len, "UTF-8");
+                sb.append( s );
+            }
+            fileContents = sb.toString();
+
+            if( is != null)
+                is.close();
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Exception while getting FileInputStream", e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return fileContents;
+    }
+
+    /**
+     * Dump to log and return a string with the description of a cursor.
+     * @param cursor
+     * @return
+     */
+    public static String dumpCursorDescription(Cursor cursor, String tag){
+
+        String description = tag + " ";
+        String newLine = "";
+
+        if( cursor == null)
+            description += "cursor is null";
+        else
+        if( cursor.isClosed())
+            description += "cursor is closed";
+        else{
+            description += "count(): "+cursor.getCount()+"\n";
+            for( int columnIndex=0; columnIndex< cursor.getColumnCount(); columnIndex++){
+
+                String columnDesc = columnIndex+": "+cursor.getColumnName(columnIndex);
+                description = description + newLine + columnDesc;
+                newLine = "\n";
+            }
+        }
+        LogUtil.log(description);
+        return description;
+    }
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list =
+                packageManager.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    /**
+     * Lock the screen in the current orientation.  It will remain locked in this orientation
+     * until unlocked.
+     * @param act
+     */
+    public static void lockScreenOrientation(Activity act) {
+        int currentOrientation = act.getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    /**
+     * Unlock the screen orientation that was locked with lockScreenOrientation.
+     * @param act
+     */
+    public static void unlockScreenOrientation(Activity act) {
+        act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
+    /**
+     * Return true when the device can reach the Internet.
+     * @param context
+     * @return
+     */
+    public static boolean checkInternetConnection( Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            LogUtil.log(LogUtil.LogType.UTIL, "Internet Connection Not Present");
+            return false;
+        }
+    }
+}

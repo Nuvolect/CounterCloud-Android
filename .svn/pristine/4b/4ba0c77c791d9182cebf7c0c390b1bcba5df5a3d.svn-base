@@ -1,0 +1,52 @@
+package com.nuvolect.countercloud.util;//
+
+//TODO create class description
+//
+    /**
+     * Confirm that the device trying to connect is approved.
+     * Approval can temporarily be disabled during the pairing process.
+     */
+//    public class NullHostNameVerifier implements HostnameVerifier {
+
+//        /**
+//         * Only allow registration when device is in pairing mode, this is the
+//         * only time host verification is disabled.
+//         */
+//        public boolean m_hostVerifierEnabled = true;
+//        private static NullHostNameVerifier instance;
+//
+//        public static synchronized NullHostNameVerifier getInstance() {
+//            if(instance == null) {
+//                instance = new NullHostNameVerifier();
+//            }
+//            return instance;
+//        }
+//
+//        @Override
+//        public boolean verify(String hostname, SSLSession session) {
+//
+//            if( ! m_hostVerifierEnabled){
+//
+//                LogUtil.log(LogUtil.LogType.WEB_SERVER, "Host verifier disabled, Certificate approved for " + hostname);
+//                return true;
+//            }else
+//            if( hostname.contentEquals( getCompanionServerIp())
+//                    || hostname.contentEquals( m_ip_address )){
+//
+//                LogUtil.log(LogUtil.LogType.WEB_SERVER, "Certificate approved for " + hostname);
+//                return true;
+//            }
+//            else{
+//
+//                LogUtil.log(LogUtil.LogType.WEB_SERVER, "Certificate denied for " + hostname);
+//                return false;
+//            }
+//        }
+//
+//        public void setHostVerifierEnabled(boolean hostVerifierEnabled) {
+//
+//            LogUtil.log(LogUtil.LogType.WEB_SERVER, "setHostVerifierEnabled(): " + hostVerifierEnabled);
+//
+//            this.m_hostVerifierEnabled = hostVerifierEnabled;
+//        }
+//    }

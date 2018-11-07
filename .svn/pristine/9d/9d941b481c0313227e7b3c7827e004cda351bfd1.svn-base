@@ -1,0 +1,391 @@
+package com.nuvolect.countercloud.main;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.database.ContentObserver;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.os.SystemClock;
+import android.provider.ContactsContract;
+
+import com.nuvolect.countercloud.data.DbProvider;
+import com.nuvolect.countercloud.data.DbProvider.CloudUpdate;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+import com.nuvolect.countercloud.util.NotificationUtil;
+
+import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+
+public class WorkerService extends Service {
+
+    private static final boolean DEBUG = true;
+    private static MyContentObserver observer = null;
+    private static Context m_ctx;
+    private static Handler mHandler;
+
+    public enum CcEvent { REGISTER, ADD, UPDATE, DELETE};
+
+    // Target we publish for clients to send messages to IncomingHandler.
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+    // Keeps track of all current registered clients.
+    ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+
+    public static enum Command {
+        CLONE_CLOUD_DB,
+        INTERRUPT_PROCESSING,
+        INTERRUPT_PROCESSING_AND_STOP,
+        NOTIFY_LOG_UPDATE,
+        PROCESS_CLOUD_UPDATES,
+        REGISTER_CLOUD_OBSERVER,
+        UNREGISTER_CLOUD_OBSERVER,
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        m_ctx = this.getApplicationContext();
+
+        WorkerServiceThread looper = new WorkerServiceThread();
+        looper.start();
+        try {
+            looper.ready.acquire();
+        } catch (InterruptedException e) {
+            LogUtil.log(LogType.WORKER,
+                    "Interrupted during wait for the WorkerService Thread to start, prepare for trouble!");
+            LogUtil.logException(m_ctx, LogType.WORKER, e);
+        }
+    }
+
+    private class WorkerServiceThread extends Thread {
+        public Semaphore ready = new Semaphore(0);
+
+        WorkerServiceThread() {
+            this.setName("commServiceThread");
+        }
+
+        @Override
+        public void run() {
+            Looper.prepare();
+            mHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    _handleMessage(msg);
+                }
+            };
+            ready.release(); // Signal the looper and handler are created
+            Looper.loop();
+        }
+    }
+
+    // internally queue a command
+    @SuppressWarnings("unused")
+    private void queueCommand(Command cmd) {
+
+        Bundle bundle = new Bundle();
+        //        bundle.putLong(GConst.ANGEL_ID, angel_id);
+
+        Message msg = Message.obtain();
+        msg.setData(bundle);
+        msg.what = cmd.ordinal();
+        mHandler.sendMessage(msg);
+    }
+
+    /**
+     * Put a command in the queue to be executed about timeMillis
+     * with reference to uptimeMillis()
+     * @param cmd
+     * @param atTimeMillis
+     */
+    @SuppressWarnings("unused")
+    private void queueCommand(Command cmd, long atTimeMillis) {
+        Message msg = Message.obtain();
+        msg.what = cmd.ordinal();
+        mHandler.sendMessageAtTime(msg, atTimeMillis);
+    }
+
+    /**
+     * Put a unique command in the queue to be executed about timeMillis
+     * with reference to uptimeMillis().  If there is already a command
+     * of this type, replace it with the same command but with this timestamp.
+     * @param cmd
+     * @param atTimeMillis
+     */
+    private void queueCommandSingle(Command cmd, long atTimeMillis) {
+
+        // Remove any existing messages of this type
+        mHandler.removeMessages( cmd.ordinal());
+
+        // Schedule new message
+        Message msg = Message.obtain();
+        msg.what = cmd.ordinal();
+        mHandler.sendMessageAtTime(msg, atTimeMillis);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        try {
+            Bundle extras = null;
+            if (intent != null)
+                extras = intent.getExtras();
+
+            if( extras != null && extras.containsKey("command")){
+
+                /**
+                 * Package the command defined in the intent and queue it along
+                 * with it's parameters for processing. Most commands are executed
+                 * in FIFO order with the exception of high priority commands pushed
+                 * onto the front of the queue and executed in LIFO order.
+                 */
+                Message msg = Message.obtain();
+                Bundle bundle = new Bundle();
+
+                int cmdIndex = extras.getInt("command");
+                msg.what = cmdIndex;
+                Command cmd = Command.values()[cmdIndex];
+
+                LogUtil.log(LogType.WORKER,
+                        "WorkerService onStartCommand: " + cmd.toString());
+
+                switch (cmd) {
+
+                    // No parameters
+                    case NOTIFY_LOG_UPDATE:
+                    case CLONE_CLOUD_DB:
+                    case PROCESS_CLOUD_UPDATES:
+                    case UNREGISTER_CLOUD_OBSERVER:
+                    case REGISTER_CLOUD_OBSERVER:
+                        msg.setData(bundle);
+                        mHandler.sendMessage(msg);
+                        break;
+
+                    // No parameters, take immediate action.
+                    // Clear the queue of all messages and callbacks, next command will be only command in queue.
+                    // This is the only command that we receive that does not also get executed from the queue.
+                    case INTERRUPT_PROCESSING:
+
+                        mHandler.removeCallbacksAndMessages(null);
+                        LogUtil.log(LogType.WORKER, "CLEAR_QUEUE");
+                        break;
+
+                    case INTERRUPT_PROCESSING_AND_STOP:
+
+                        mHandler.removeCallbacksAndMessages(null);
+                        LogUtil.log(LogType.WORKER, "CLEAR_QUEUE, STOPPING");
+                        this.stopSelf();
+                        break;
+
+                    default:
+                        LogUtil.log(LogType.WORKER,
+                                "WorkerService ERROR not recognized: " + cmd.toString());
+                }
+                extras.clear();
+
+            }
+        } catch (Exception e) {
+            LogUtil.logException(m_ctx, LogType.WORKER, e);
+        }
+
+        return START_STICKY;
+    }
+
+    private void _handleMessage(Message msg) {
+
+        Command cmd = Command.values()[msg.what];
+
+        try {
+
+            switch (cmd) {
+
+                case UNREGISTER_CLOUD_OBSERVER:{
+
+                    if( observer != null ){
+
+                        m_ctx.getContentResolver().unregisterContentObserver(observer);
+                        NotificationUtil.cancelAll(m_ctx);
+                    }
+                }
+
+                case REGISTER_CLOUD_OBSERVER:{
+
+                    if( observer == null){
+
+                        observer = new MyContentObserver();
+                        m_ctx.getContentResolver()
+                                .registerContentObserver (ContactsContract.RawContacts.CONTENT_URI, true, observer);
+
+                        if(DEBUG)LogUtil.log("WorkerService, CounterCloudMonitorService registered");
+
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("command", cmd.ordinal());
+                        notifyListeners(bundle);
+                    }
+                    break;
+                }
+                case CLONE_CLOUD_DB:{
+
+                    int size = DbProvider.cloneRawContactDb( m_ctx);
+                    if(DEBUG)
+                        LogUtil.log("WorkerService, db cloned size: "+size);
+                    break;
+                }
+                case PROCESS_CLOUD_UPDATES:{
+
+                    CloudUpdate cloudUpdate = DbProvider.compareCloudToLocalDb(m_ctx);
+                    notifyList( cloudUpdate.m_changeList );
+
+                    if( cloudUpdate.m_added > 0){
+                        Analytics.send(m_ctx,
+                                Analytics.SERV + "WorkerService",
+                                Analytics.OBSERVER,
+                                Analytics.ADDED, cloudUpdate.m_added);
+                    }
+                    if( cloudUpdate.m_updated > 0){
+                        Analytics.send( m_ctx,
+                                Analytics.SERV+"WorkerService",
+                                Analytics.OBSERVER,
+                                Analytics.UPDATED, cloudUpdate.m_added);
+                    }
+                    if( cloudUpdate.m_deleted > 0){
+                        Analytics.send( m_ctx,
+                                Analytics.SERV+"WorkerService",
+                                Analytics.OBSERVER,
+                                Analytics.DELETED, cloudUpdate.m_added);
+                    }
+
+                    if(DEBUG)LogUtil.log("ContactMonitorService, update: "+cloudUpdate.m_changeList.toString());
+                    break;
+                }
+                // Just pass the command along to any registered listeners
+                case NOTIFY_LOG_UPDATE:{
+                    LogUtil.log(LogType.WORKER,
+                            "WorkerService processing: " + cmd.toString());
+                    LogUtil.log(LogType.WORKER,
+                            "WorkerService mClients.size(): " + mClients.size());
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("command", cmd.ordinal());
+                    notifyListeners(bundle);
+                    break;
+                }
+
+                default:
+                    LogUtil.log("WorkerService, command ignored: "+cmd.toString());
+                    break;
+            }
+
+        }
+        catch (Exception e) {
+            LogUtil.logException( m_ctx, LogType.WORKER, e);
+        }
+    }
+
+    /**
+     * Watch the database for updates.  When changes are detected, notify user.
+     * For whatever reason, onChange is called multiple times producing duplicate transactions.
+     */
+    public class MyContentObserver extends ContentObserver {
+
+        public MyContentObserver() {
+            super(null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+
+            long futureTime = SystemClock.uptimeMillis() + 3000L;// 3 seconds in the future
+            queueCommandSingle( Command.PROCESS_CLOUD_UPDATES, futureTime);
+        }
+    }
+    /**
+     * Iterate through a list, remove duplicates and push out notification updates.
+     * Duplicates are the result of onChange being call multiple times for the same transaction.
+     * @param list
+     */
+    private void notifyList(ArrayList<String> list){
+
+        for( String item : list){
+
+                NotificationUtil.pushNotification(getBaseContext(),
+                        "CounterCloud: " + item, item);
+                if(DEBUG)LogUtil.log("ContactMonitorService, onChange: "+item);
+        }
+    }
+    /**
+     * Command to the service to register a client, receiving callbacks from the
+     * service. The Message's replyTo field must be a Messenger of the client
+     * where callbacks should be sent.
+     */
+    public static final int MSG_REGISTER_CLIENT = 1;
+
+    /**
+     * Command to the service to unregister a client, to stop receiving
+     * callbacks from the service. The Message's replyTo field must be a
+     * Messenger of the client as previously given with MSG_REGISTER_CLIENT.
+     */
+    public static final int MSG_UNREGISTER_CLIENT = 2;
+
+    /**
+     * Handler of incoming messages from clients.
+     */
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_REGISTER_CLIENT:
+                    mClients.add(msg.replyTo);
+                    break;
+                case MSG_UNREGISTER_CLIENT:
+                    mClients.remove(msg.replyTo);
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    /**
+     * Pass message to all active listeners.
+     * @param bundle
+     */
+    private void notifyListeners(Bundle bundle) {
+
+        for (int i = mClients.size() - 1; i >= 0; i--) {
+            try {
+                Message msg = Message.obtain();
+                msg.setData(bundle);
+                msg.what = bundle.getInt("command");
+                mClients.get(i).send(msg);
+            } catch (RemoteException e) {
+                // The client is dead. Remove it from the list;
+                // we are going through the list from back to front
+                // so this is safe to do inside the loop.
+                mClients.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Check if we have active listeners. Generally this will be an Activity that
+     * is interested to know the state of this service.
+     * @return boolean
+     */
+    public boolean activeListeners(){
+        return mClients.size() > 0;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
+    }
+}

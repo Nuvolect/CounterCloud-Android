@@ -1,0 +1,27 @@
+package com.nuvolect.countercloud.main;
+
+
+public class CConst {
+
+    public static final String APP_SIGNATURE                = "com.nuvolect.countercloud";
+    public static final String FOLDER_NAME                  = "/countercloud/";
+    public static final String PERMISSION_MANAGER           = "permission_manager";
+    public static final String DEFAULT_ACCOUNT              = "Default_account";
+    public static final String BLOG_URL                     = "https://nuvolect.com/blog";
+
+	public static final String CC_TOC_HREF_URL              = "<a href='http://nuvolect.com/countercloud_terms'>Terms and Conditions</a>";
+	public static final String CC_PP_HREF_URL               = "<a href='http://nuvolect.com/privacy'>Privacy Policy</a>";
+    public static final String CC_GOOGLE_PLAY_HREF_URL      = "<a href='https://play.google.com/store/apps/details?id=com.nuvolect.countercloud'>CounterCloud at Google Play</a>";
+    public static final String DONATE_URL                   = "http://www.nuvolect.com/donate";
+
+    public static final String ACCOUNT_KEY                  = "account_key";
+    public static final String SECURITY_CHECK               = "security_check";
+    public static final String ALL_ACCOUNTS                 = "All accounts";
+    public static final String SHOW_TIPS                    = "show_tips";
+
+    public static final String EVENT_LOG_FRAGMENT_TAG       = "event_log_fragment_tag";
+    public static final String APP_SURVEY_FRAGMENT_TAG      = "app_survey_fragment_tag";
+
+    public static final long WEEK_MS                        = 7 * 24 * 60 * 60 * 1000L;
+    public static final long HOURS_24_MS                    = 1 * 24 * 60 * 60 * 1000L;// 1 day
+}

@@ -1,0 +1,4 @@
+#Mon May 29 15:10:05 EDT 2017
+base.0=/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/transforms/dex/debug/folders/1000/1f/main
+renamed.0=classes.dex
+file.0=/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/transforms/dex/debug/folders/1000/1f/main/classes.dex

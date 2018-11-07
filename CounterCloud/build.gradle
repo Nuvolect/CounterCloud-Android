@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+
+// Load keystore
+def keystorePropertiesFile = System.getProperty("user.home")+"/.gradle/keystore.properties"
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['CC_keyAlias']
+            storeFile file(keystoreProperties['CC_storeFile'])
+            storePassword keystoreProperties['CC_storePassword']
+            keyPassword keystoreProperties['CC_keyPassword']
+        }
+        debug {
+        }
+    }
+
+    def versionMajor = 2
+    def versionMinor = 3
+    def versionPatch = 1
+    def versionBuild = 1
+
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        applicationId "com.nuvolect.countercloud"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        release {
+            debuggable false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.google.guava:guava:20.0'
+    implementation files('libs/commons-codec.jar')
+    implementation files('libs/libGoogleAnalyticsServices.jar')
+    implementation 'com.squareup.okio:okio:1.6.0'
+    implementation 'com.squareup.okhttp:okhttp:2.6.0'
+    implementation 'com.squareup.okhttp:okhttp-urlconnection:2.6.0'
+}

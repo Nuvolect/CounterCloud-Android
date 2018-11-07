@@ -1,0 +1,55 @@
+{
+  "tips": [
+    {
+      "tip": "Select <strong>All accounts</strong> to see details all your contacts. Raw Data are the elements that make up Raw Contacts."
+    },
+    {
+      "tip": "All lists in CounterCloud are active. <strong>Touch list items</strong> to expose details."
+    },
+    {
+      "tip": "<strong>Apps that can read your contacts</strong> will show you an interactive <strong>Permissions Survey</strong> of apps that can access your contacts. Be sure you can trust each of these apps."
+    },
+    {
+      "tip": "The <strong>Permission Survey</strong> on Marshmallow makes it easy to disable contact permissions for apps you do not trust."
+    },
+    {
+      "tip": "The <strong>Permission Survey</strong> shows permissions requested by each app. It does not show current permissions set by the user."
+    },
+    {
+      "tip": "If you must keep contacts on your Smartphone, encrypt them with <a href='https://play.google.com/store/apps/details?id=com.nuvolect.crypsafe'>CrypSafe</a>. The app is completely free."
+    },
+    {
+      "tip": "Manage <strong>Show Tips</strong> from the Settings menu. If you disable the Show Tips checkbox, tips will not be shown again.  Selecting Close tips is temporary."
+    },
+    {
+      "tip": "To maintain a <strong>minimal cloud footprint:</strong><br>1- Make a backup of all your contacts<br>2- Star all contacts you want to keep<br>3- Start the Cloud Manager with 'All accounts'<br>4-Select button <strong>Select Unstarred</strong> <br>5-Select <strong>Delete</strong> button."
+    },
+    {
+      "tip": "The <strong>Cloud Event Log</strong> shows a history of updates to your Google contacts in the cloud. The list is active, select any item for details."
+    },
+    {
+      "tip": "A deleted contact will be shown in two stages, first as a UPDATE and then a DELETE in the Cloud Event Log."
+    },
+    {
+      "tip": "When deleting contacts, lookout for the Android notification <strong>Sync, Too many contacts deletes</strong>. Approve the notification and the delete process will continue.  You may need to do this several times."
+    },
+    {
+      "tip": "The clear-blue theme of CounterCloud represents clear-blue skies, i.e., a safe environment, free from the risks associated with storing private information in the cloud."
+    },
+    {
+      "tip": "CounterCloud monitors and displays Android notifications for all cloud Additions, Updates and Deletions 24/7. <strong>Notification updates</strong> can be enabled or disabled from the Settings menu."
+    },
+    {
+      "tip": "Good security engineers are expensive but worth it. If you use this app and appreciate having a right to privacy, <a href='https://nuvolect.com/donate/#countercloud'>consider making a donation</a>. Your donations help support this app."
+    },
+    {
+      "tip": "Raw Contacts are composed from Raw Data. CounterCloud can be used to selectively delete Raw Data or entire Raw Contacts."
+    },
+    {
+      "tip": "Have a feature request, comment or question? Contact us from Settings-<strong>Developer Feedback</strong>."
+    },
+    {
+      "tip": "<strong>Security Check</strong> will search your contacts for sensitive information such as social security numbers, passwords and security questions. It is recommended to encrypt this sensitive information and then purge it from the cloud."
+    }
+  ]
+}

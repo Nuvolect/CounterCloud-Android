@@ -1,0 +1,257 @@
+package com.nuvolect.countercloud.survey;//
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * Utilities to generate app permission metrics and publish survey results.
+ */
+public class SurveyUtil {
+
+    public static String APP_NAME                   = "an";
+    public static String PACKAGE_NAME               = "pn";
+    public static String READ_CONTACTS              = "rc";
+    public static String WRITE_CONTACTS             = "wc";
+    public static String READ_EXTERNAL_STORAGE      = "res";
+    public static String WRITE_EXTERNAL_STORAGE     = "wes";
+    public static String NETWORK_ACCESS             = "na";
+    public static String RECEIVE_BOOT_COMPLETED     = "rbc";
+    public static String INTERNET                   = "i";
+    public static String GET_ACCOUNTS               = "ga";
+    public static String CAMERA                     = "c";
+    public static String RECORD_AUDIO               = "ra";
+    public static String ACCESS_COARSE_LOCATION     = "acl";
+    public static String ACCESS_FINE_LOCATION       = "afl";
+
+    /**
+     * Publish a survey or update the survey for all apps of a single device.
+     * Each app survey publish event is timestamped. Timestamps are checked and updated when the
+     * survey results are published. Survey results for an app cannot be published more than one
+     * time in 7 days. This way a snapshot of apps can be taken at any time without being heavily
+     * influenced by users that frequently run the app.
+     * @param ctx
+     */
+    public static void publishAppSurvey(Context ctx) {
+
+        int publishTotal = 0;
+        int contactAppsTotal = 0;
+
+        PackageManager pm = ctx.getPackageManager();
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo applicationInfo : packages) {
+            try {
+                PackageInfo packageInfo = pm.getPackageInfo(applicationInfo.packageName, PackageManager.GET_PERMISSIONS);
+
+                String[] requestedPermissions = packageInfo.requestedPermissions;
+
+                if(requestedPermissions != null) {
+
+                    JSONObject appObj = getDefaultAppObj();
+                    JSONObject otherObj = null;
+                    JSONObject contactsObj = null;
+
+                    for (String requestedPermission : requestedPermissions) {
+
+                        if (requestedPermission.matches(Manifest.permission.WRITE_CONTACTS))
+                            contactsObj = appObj.put(WRITE_CONTACTS, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.READ_CONTACTS))
+                            contactsObj = appObj.put(READ_CONTACTS, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                            otherObj = appObj.put(WRITE_EXTERNAL_STORAGE, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.READ_EXTERNAL_STORAGE))
+                            otherObj = appObj.put(READ_EXTERNAL_STORAGE, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.RECEIVE_BOOT_COMPLETED))
+                            otherObj = appObj.put(RECEIVE_BOOT_COMPLETED, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.INTERNET))
+                            otherObj = appObj.put(INTERNET, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.GET_ACCOUNTS))
+                            otherObj = appObj.put(GET_ACCOUNTS, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.CAMERA))
+                            otherObj = appObj.put(CAMERA, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.RECORD_AUDIO))
+                            otherObj = appObj.put(RECORD_AUDIO, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.ACCESS_COARSE_LOCATION))
+                            otherObj = appObj.put(ACCESS_COARSE_LOCATION, 1);
+                        else
+                        if (requestedPermission.matches(Manifest.permission.ACCESS_FINE_LOCATION))
+                            otherObj = appObj.put(ACCESS_FINE_LOCATION, 1);
+                    }
+                    if( otherObj != null || contactsObj != null){
+
+                        appObj.put(APP_NAME, String.valueOf(applicationInfo.loadLabel(pm)));
+                        appObj.put(PACKAGE_NAME, applicationInfo.packageName);
+
+                        String cat = "unknown";
+                        if( applicationInfo.packageName.startsWith("com.google."))
+                            cat = "google";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.android."))
+                            cat = "android";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.sec."))
+                            cat = "sec";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.lge."))
+                            cat = "lge";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.mediatek."))
+                            cat = "mediatek";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.htc."))
+                            cat = "htc";
+                        else
+                        if( applicationInfo.packageName.startsWith("com.motorola."))
+                            cat = "motorola";
+
+                        publishTotal += Publish.getInstance(ctx)
+                                .publishCond7Days( appObj.toString(), Analytics.SURVEY+cat,
+                                        applicationInfo.packageName);
+
+                        if( contactsObj != null)
+                            ++contactAppsTotal;
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        LogUtil.log(LogUtil.LogType.APP_SURVEY, "Total published: "+publishTotal);
+
+        // Publish the number of apps along with app version and SDK.
+        Publish.getInstance(ctx).publishCondTotal7Days(contactAppsTotal);
+
+        // Persist survey timers
+        Publish.getInstance(ctx).surveySave();
+    }
+
+
+    private static JSONObject getDefaultAppObj() {
+
+        JSONObject defaultAppObj = new JSONObject();
+
+        try {
+
+            defaultAppObj.put(READ_CONTACTS, 0);
+            defaultAppObj.put(WRITE_CONTACTS,0);
+            defaultAppObj.put(READ_EXTERNAL_STORAGE, 0);
+            defaultAppObj.put(WRITE_EXTERNAL_STORAGE, 0);
+            defaultAppObj.put(NETWORK_ACCESS,0);
+            defaultAppObj.put(RECEIVE_BOOT_COMPLETED, 0);
+            defaultAppObj.put(INTERNET, 0);
+            defaultAppObj.put(GET_ACCOUNTS, 0);
+            defaultAppObj.put(CAMERA, 0);
+            defaultAppObj.put(RECORD_AUDIO, 0);
+            defaultAppObj.put(ACCESS_COARSE_LOCATION, 0);
+            defaultAppObj.put(ACCESS_FINE_LOCATION, 0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return defaultAppObj;
+    }
+
+    public static int getContactsAppsTotal(Context ctx) {
+
+        int appsAccessingContacts = 0;
+
+        PackageManager pm = ctx.getPackageManager();
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo applicationInfo : packages) {
+            try {
+                PackageInfo packageInfo = pm.getPackageInfo(applicationInfo.packageName, PackageManager.GET_PERMISSIONS);
+
+                String[] requestedPermissions = packageInfo.requestedPermissions;
+
+                if(requestedPermissions != null) {
+
+                    for (String requestedPermission : requestedPermissions) {
+
+                        if (requestedPermission.contains("CONTACTS")) {
+
+                            ++appsAccessingContacts;
+                            break;
+                        }
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return appsAccessingContacts;
+    }
+
+
+    /**
+     * Read the app database and return it as a JSON object.
+     * @param ctx
+     * @return
+     */
+    public static JSONObject getAppDb(Context ctx){
+
+        /**
+         * Load packages from raw resources into a JSON object
+         */
+        String fileContents = "";
+        StringBuilder sb = new StringBuilder();
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            InputStream is = ctx.getResources().openRawResource(R.raw.app_survey_data);
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+
+                String s = new String( buffer, 0, len, "UTF-8");
+                sb.append( s );
+            }
+            fileContents = sb.toString();
+
+            if( is != null)
+                is.close();
+        } catch (FileNotFoundException e) {
+            LogUtil.logException(LogUtil.LogType.APP_SURVEY_FRAGMENT, e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Build the JSON array
+         */
+        try {
+
+            jsonObject= new JSONObject( fileContents );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+}

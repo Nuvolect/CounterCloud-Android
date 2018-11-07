@@ -1,0 +1,571 @@
+package com.nuvolect.countercloud.main;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.QuickContact;
+import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.license.LicenseManager;
+import com.nuvolect.countercloud.main.CloudManagerCursorAdapter.CloudManagerCaCallbacks;
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.data.CloudContacts;
+import com.nuvolect.countercloud.data.Persist;
+import com.nuvolect.countercloud.data.SecurityCheck;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+
+/**
+ * A list fragment representing a list of contacts or raw contact data.
+ * <pre>
+ * There are three unique modes:
+ * Raw contacts - view, search and delete raw contacts and associated raw data
+ * Raw data - view, search and delete raw data
+ * Security check - a list search is made on raw data, results are viewed and items can be deleted
+ * This is implemented as a spinner and with the state represented in an ENUM.
+ * </pre>
+ */
+public class CloudManagerFragment extends ListFragment {
+
+    //    private static final boolean DEBUG = false;
+    Activity m_act;
+    Context m_ctx;
+    boolean mWasPaused;
+    CloudManagerCursorAdapter mCloudManagerCursorAdapter;
+    private AsyncTask<String, Void, Integer> mSearchAsyncTask;
+    ContentResolver m_contentResolver;
+    Cursor mCursor;
+    Spinner mDataSpinner;
+    Spinner mSelectSpinner;
+    CloudManagerMode mCloudManagerMode;
+    View mRootView;
+    String mSearchString = "";
+    private EditText mSearchStringEt;
+    String m_account = "";
+    // "Contacts" data is read only
+    String[] ccDataList = {"Raw Contacts","Raw Data", "Security Check"};
+    public static enum CloudManagerMode { RAW_CONTACTS, RAW_DATA, SECURITY_CHECK };
+
+    /** Callbacks from the CursorAdapter */
+    CloudManagerCaCallbacks mAdapterCallbacks;
+
+    /**
+     * The fragment's current callback object, which is notified of list item clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onRefreshFragment();
+    }
+    /**
+     * A dummy implementation of the {@link Callbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onRefreshFragment() { };
+    };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException(
+                    "Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public CloudManagerFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "onCreate");
+
+        m_act = getActivity();
+        m_ctx = m_act.getApplicationContext();
+        mWasPaused = true;
+
+        // Load the content specified by the fragment arguments.
+
+        if (getArguments().containsKey(CConst.ACCOUNT_KEY)) {
+            m_account = getArguments().getString(CConst.ACCOUNT_KEY);
+        }
+        else
+            m_account = "";
+
+        boolean securityCheck = false;
+        if (getArguments().containsKey(CConst.SECURITY_CHECK)) {
+
+            securityCheck = getArguments().getBoolean(CConst.SECURITY_CHECK);
+        }
+
+        mCloudManagerMode = Persist.getCloudManagerMode(m_ctx);
+
+        /*
+         * Change the mode to security check if requested by user, otherwise
+         * leave mode as it was, default to Raw Contacts.
+         */
+        if( securityCheck )
+            mCloudManagerMode = CloudManagerMode.SECURITY_CHECK;
+        else
+        if( mCloudManagerMode == CloudManagerMode.SECURITY_CHECK)
+            mCloudManagerMode = CloudManagerMode.RAW_CONTACTS;
+
+        Persist.setCloudManagerMode(m_ctx, mCloudManagerMode);
+
+        m_contentResolver = m_act.getContentResolver();
+
+        mAdapterCallbacks = new CloudManagerCaCallbacks(){
+
+            @Override
+            public void itemClick(long contact_id) {
+
+                Uri contactUri = CloudContacts.getContactUri(m_ctx, contact_id);
+
+                if( contactUri == null)
+                    Toast.makeText(m_ctx, "Contact deleted or URI invalid", Toast.LENGTH_SHORT).show();
+                else{
+                    LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT,
+                            "itemClick: "+ contact_id+", "+contactUri.toString());
+
+                    QuickContact.showQuickContact(m_act, mRootView, contactUri,
+                            QuickContact.MODE_MEDIUM, null);
+                }
+            }
+        };
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "onPause");
+        mWasPaused = true;
+
+        if( mSearchAsyncTask != null && ! mSearchAsyncTask.isCancelled())
+            mSearchAsyncTask.cancel( true );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "onResume");
+        mWasPaused = false;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "onDestroy");
+
+        if( mCursor != null && !mCursor.isClosed())
+            mCursor.close();
+        mCursor = null;
+
+        mCloudManagerCursorAdapter = null;
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "onCreateView");
+
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.cloud_manager_fragment, container, false);
+        mRootView = rootView;
+        mDataSpinner = (Spinner) rootView.findViewById(R.id.data_spinner);
+        mSelectSpinner = (Spinner) rootView.findViewById(R.id.select_spinner);
+
+        Button deleteButton = (Button) rootView.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener( deleteButtonClickListener );
+
+        mSearchString = "";
+        mSearchStringEt = (EditText) rootView.findViewById(R.id.searchString);
+
+        if( mCloudManagerMode == CloudManagerMode.SECURITY_CHECK)
+            mSearchStringEt.setVisibility(EditText.INVISIBLE);
+        else{
+            mSearchStringEt.setVisibility(EditText.VISIBLE);
+            mSearchStringEt.addTextChangedListener( searchStringWatcher );
+        }
+
+        updateDataSpinner();
+        updateCursor();
+        updateAdapter();
+        updateSelectSpinner();
+
+        return rootView;
+    }
+
+    TextWatcher searchStringWatcher = new TextWatcher(){
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            mSearchString = s.toString().trim();
+            updateCursor();
+            updateAdapter();
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+        @Override
+        public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+    };
+
+    OnClickListener selectAllClickButtonListener = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+
+            mCloudManagerCursorAdapter.selectAllButton();
+        }
+    };
+
+    OnClickListener selectNoneButtonClickListener = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+
+            mCloudManagerCursorAdapter.selectNoneButton();
+        }
+    };
+
+    OnClickListener deleteButtonClickListener = new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+
+            if( ! LicenseManager.mIsPremium){
+
+                Toast.makeText(m_act, "Premium feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if( mCloudManagerCursorAdapter.getDeleteCount() == 0){
+
+                Toast.makeText(m_act, "Zero items to delete", Toast.LENGTH_SHORT).show();
+
+            }else{
+
+                if( SettingsActivity.deleteDialogSetting(m_act.getApplicationContext()))
+                    deleteConfirmationDialog();
+                else{
+                    mCloudManagerCursorAdapter.deleteButton(m_act, cloudDeleteCallback);
+                }
+            }
+        }
+    };
+
+    CloudManagerCursorAdapter.CloudDeleteCallback cloudDeleteCallback = new CloudManagerCursorAdapter.CloudDeleteCallback() {
+        @Override
+        public void deleteSuccess(int itemsDeleted) {
+
+            updateCursor();
+            updateAdapter();
+            mCallbacks.onRefreshFragment();
+
+            Analytics.send( m_ctx,
+                    Analytics.FRAG+"CloudManager",
+                    "del_noconfirm_"+mCloudManagerMode.toString(),
+                    Analytics.COUNT, itemsDeleted);
+        }
+    };
+
+    /**
+     * Manage the type of data under the spinner to be viewed and deleted.
+     * http://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner
+     */
+    private void updateDataSpinner() {
+
+        ArrayAdapter<String> spinnerArrayAdapter;
+        spinnerArrayAdapter = new ArrayAdapter<String>(
+                m_act, android.R.layout.simple_spinner_item, ccDataList);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDataSpinner.setAdapter(spinnerArrayAdapter);
+        mDataSpinner.setSelection(mCloudManagerMode.ordinal(), false);// stop double fire
+
+        mDataSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
+
+                mCloudManagerMode = CloudManagerMode.values()[position];
+                Persist.setCloudManagerMode(m_ctx, mCloudManagerMode);
+
+                if (mCloudManagerMode == CloudManagerMode.SECURITY_CHECK)
+                    mSearchStringEt.setVisibility(EditText.INVISIBLE);
+                else {
+                    mSearchStringEt.setVisibility(EditText.VISIBLE);
+                    mSearchStringEt.addTextChangedListener(searchStringWatcher);
+                }
+
+                updateCursor();
+                updateAdapter();
+
+                // Reset selection spinner
+                mSelectSpinner.setSelection(0, false);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+    }
+
+    private void updateSelectSpinner(){
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                m_act, R.array.select_array, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        mSelectSpinner.setAdapter(adapter);
+        mSelectSpinner.setSelection(0, false);
+
+        mSelectSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                LogUtil.log("position: "+position);
+
+                switch (position) {
+
+                    case 0:// None
+                        mCloudManagerCursorAdapter.selectNoneButton();
+                        break;
+                    case 1:// All selected
+                        mCloudManagerCursorAdapter.selectAllButton();
+                        break;
+                    case 2:// Starred
+                        mCloudManagerCursorAdapter.selectStarred();
+                        break;
+                    case 3:// Unstarred
+                        mCloudManagerCursorAdapter.selectUnstarred();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+
+    /**
+     * Create a new cursor based on the current mode and conditions.  The existing
+     * cursor will be closed before creating a new one.
+     */
+    public void updateCursor(){
+
+        /*
+         * Before creating a new cursor, make sure previous is closed
+         */
+        if( mCursor != null && !mCursor.isClosed())
+            mCursor.close();
+
+        String where = "";
+        String[] args = null;
+
+        /**
+         * Early return if device does not provide a valid account.
+         */
+        if( m_account == null){
+            LogUtil.log(LogType.CLOUD_MAIN_FRAGMENT, "getRawDataCount, account == null");
+            m_account = "";
+        }
+        if( ! m_account.contains(CConst.ALL_ACCOUNTS)){
+            where = "account_name LIKE ?";
+            args = new String[]{ "%" + m_account + "%"};
+        }
+
+        switch (mCloudManagerMode){
+
+            case RAW_CONTACTS:{
+
+                if( ! mSearchString.isEmpty()){
+
+                    String search_where = "display_name LIKE ?";
+                    String[] search_args = new String[]{ "%" + mSearchString + "%"};
+
+                    where = DatabaseUtils.concatenateWhere( where, search_where);
+                    args = DatabaseUtils.appendSelectionArgs( args, search_args);
+                }
+
+                String deleted_where = ContactsContract.RawContacts.DELETED + " != 1 AND "
+                        + ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY + " <> ''";
+                where = DatabaseUtils.concatenateWhere( where, deleted_where);
+
+                mCursor = m_contentResolver.query(
+                        ContactsContract.RawContacts.CONTENT_URI,
+                        new String[]{ // projection
+                                ContactsContract.RawContacts._ID,
+                                ContactsContract.RawContacts.CONTACT_ID,
+                                ContactsContract.RawContacts.ACCOUNT_NAME,
+                                ContactsContract.RawContacts.ACCOUNT_TYPE,
+                                ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY,
+                                ContactsContract.RawContacts.TIMES_CONTACTED,
+                                ContactsContract.RawContacts.LAST_TIME_CONTACTED,
+                                ContactsContract.RawContacts.STARRED,
+                        },
+                        where, // selection
+                        args,  // selection params
+                        ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY + " ASC"
+                );
+                break;
+            }
+            case RAW_DATA:{
+
+                if( ! mSearchString.isEmpty()){
+
+                    String search_where = "data1 LIKE ?";
+                    String[] search_args = new String[]{ "%" + mSearchString + "%"};
+
+                    where = DatabaseUtils.concatenateWhere( where, search_where);
+                    args = DatabaseUtils.appendSelectionArgs( args, search_args);
+                }
+
+                String deleted_where = ContactsContract.Data.DISPLAY_NAME + " <> ''";  // selection
+                where = DatabaseUtils.concatenateWhere( where, deleted_where);
+
+                mCursor = m_contentResolver.query(
+                        ContactsContract.Data.CONTENT_URI,
+                        new String[]{ // projection
+                                ContactsContract.Data._ID,
+                                ContactsContract.Data.CONTACT_ID, //.RAW_CONTACT_ID,
+                                ContactsContract.Data.DATA1,
+                                ContactsContract.Data.DISPLAY_NAME,
+                                ContactsContract.Data.MIMETYPE,
+                                ContactsContract.Data.STARRED,
+                        },
+                        where, // selection
+                        args,  // selection params
+                        ContactsContract.Data.DISPLAY_NAME + " ASC"
+                );
+                break;
+            }
+            case SECURITY_CHECK:{
+
+                mCursor = SecurityCheck.getResultsCursor(m_ctx);
+
+                mSearchAsyncTask = new SecureSearchAsync( ).execute( m_account);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Long running secure search.  It searches for a list of potentially private keywords.
+     * This is a very computationally expensive task. The raw contact database is searched
+     * for every element of a list of target words, i.e., order n (I think). The search
+     * is not case sensitive and a keyword can be any part of a row in the database.
+     */
+    class SecureSearchAsync extends AsyncTask<String, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+
+            String account = params[0];
+            int results = SecurityCheck.populateResultsTable(m_ctx, account);
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+
+            if( mWasPaused || m_act == null || m_act.isFinishing())
+                return;
+
+            mCursor = SecurityCheck.getResultsCursor(m_ctx);
+            updateAdapter();
+
+            if( mCursor.getCount() == 0)
+                Toast.makeText(m_act, "Security search came up empty", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updateAdapter(){
+
+        mCloudManagerCursorAdapter = new CloudManagerCursorAdapter( m_act,
+                mCursor,
+                0,  // flags, not using
+                R.layout.cloud_manager_item,
+                mCloudManagerMode,
+                m_account,
+                mAdapterCallbacks
+        );
+        setListAdapter(mCloudManagerCursorAdapter);
+        LogUtil.log( LogType.CLOUD_MANAGER_FRAGMENT, "adapter replaced");
+
+        TextView summary_text_tv = (TextView) mRootView.findViewById(R.id.summary_text);
+        summary_text_tv.setText("Total items: "+ mCursor.getCount() +"  "+m_account);
+    }
+
+    /**
+     * Present an informative confirmation dialog to the user.  If the user
+     * selects Yes, execute the delete action.
+     */
+    public void deleteConfirmationDialog(){
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(m_act);
+        alert.setTitle("Delete confirmation");
+        alert.setIcon( R.drawable.cc_small_icon);
+        alert.setMessage(mCloudManagerCursorAdapter.getDeleteSummary());
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int labelIndex) {
+
+                mCloudManagerCursorAdapter.deleteButton(m_act, cloudDeleteCallback);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+}

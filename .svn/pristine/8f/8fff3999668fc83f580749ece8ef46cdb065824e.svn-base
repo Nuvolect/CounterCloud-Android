@@ -1,0 +1,31 @@
+package com.nuvolect.countercloud.license;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.main.CConst;
+
+/**
+ * Details of the license specific to this app. Keep separate from other license classes
+ * to enable plug-in-play ease of maintenance.
+ */
+public class AppSpecific {
+
+    public static String APP_CRYP_SEED = "#4!YrErd2#AvXOcL51SS";
+
+    public final static int small_icon = R.drawable.cc_small_icon;// 96 x 96
+    public final static String GOOGLE_PLAY_HREF_URL = CConst.CC_GOOGLE_PLAY_HREF_URL;
+    public final static String TOC_HREF_URL = CConst.CC_TOC_HREF_URL;
+    public final static String PP_HREF_URL = CConst.CC_PP_HREF_URL;
+
+    public static final int EVAL_DAYS                 = 14;
+    public static final long EVALUATION_PERIOD_MS     = EVAL_DAYS * 24 * 60 * 60 * 1000;
+    public static final String APP_NAME               = LConst.APP_COUNTERCLOUD;
+    public static final String SS_SHOP_THIS_APP       = LConst.SS_SHOP_COUNTERCLOUD;
+    public static final boolean EARLY_ADOPTER_PERIOD  = false;
+
+    public static String[] PREMIUM_PITCH_LIST = {
+            "Premium license will show Cloud events here",
+            "Get Premium: More features",
+            "Premium App means Premium support",
+            "Premium App: No ads"
+    };
+}

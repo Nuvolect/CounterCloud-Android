@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/action_bar_item_focused.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/action_bar_item_focused.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/ab_dropdown_navigation_item_background_focused.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background_focused.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/checkbox_selector.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/checkbox_selector.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/button_grey.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/button_grey.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/ab_dropdown_navigation_item_background.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/ab_dropdown_navigation_item_background_pressed.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background_pressed.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/action_bar_item_pressed.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/action_bar_item_pressed.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/drawable/sky_gradient.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/sky_gradient.xml"
+    }
+]

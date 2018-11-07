@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <dimen name="_5dp">5dp</dimen>
+    <dimen name="_32sp">32sp</dimen>
+    <dimen name="_28sp">28sp</dimen>
+    <dimen name="_24sp">24sp</dimen>
+    <dimen name="_22sp">22sp</dimen>
+    <dimen name="_20sp">20sp</dimen>
+
+    <dimen name="padding_5dp">5dp</dimen>
+    <dimen name="title_text_size">32sp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+</resources>

@@ -1,0 +1,149 @@
+package com.nuvolect.countercloud.main;//
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.util.LogUtil;
+
+
+/**
+ * Dialog to present whats new as a scroll view.  The contents can have embedded formatting
+ * and hyperlinks.
+ */
+public class WhatsNewFragment extends DialogFragment {
+
+    private static Activity m_act;
+    private static WhatsNewFragment m_fragment;
+    private static Dialog m_dialog;
+    private static String m_fragName;
+
+    public static WhatsNewFragment newInstance(Activity act, String fragName){
+
+        m_act = act;
+        m_fragment = new WhatsNewFragment();
+        m_fragName = fragName;
+
+        return m_fragment;
+    }
+
+    public void start(){
+
+        FragmentTransaction ft = m_act.getFragmentManager().beginTransaction();
+        Fragment prev = m_act.getFragmentManager().findFragmentByTag(m_fragName);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        this.show(ft, m_fragName);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.whats_new_fragment, container, false);
+
+        // Add the theme background outline and fill color behind fragment
+//        AppTheme.applyDrawableShape(m_act, rootView);
+
+        rootView.findViewById(R.id.cancelFl).setOnClickListener(cancelButtonOnClick);
+        rootView.findViewById(R.id.dismissButton).setOnClickListener(cancelButtonOnClick);
+
+        Resources res = m_act.getResources();
+        String message = res.getString(R.string.whats_new);
+
+        if(message.trim().isEmpty())
+            return null;
+
+        TextView tv = (TextView) rootView.findViewById(R.id.whatsNewTv);
+        tv.setText(Html.fromHtml(message, new ImageGetter(), null));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+
+        return rootView;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        m_dialog = super.onCreateDialog(savedInstanceState);
+
+        // Request a window without the title
+        m_dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        //http://stackoverflow.com/questions/20839138/dialogfragment-crashes-the-app-on-orientation-change
+        if( m_fragment != null)
+            m_fragment.setRetainInstance( true );
+
+        return m_dialog;
+    }
+
+    Button.OnClickListener cancelButtonOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            LogUtil.log("cancelButtonOnClick");
+
+            m_dialog.cancel();
+        }
+    };
+
+    private class ImageGetter implements Html.ImageGetter {
+
+        public Drawable getDrawable(String source) {
+            int id = 0;
+            if (source.equals("g_plus_icon.png")) {
+                id = R.mipmap.g_plus_icon;
+            }
+            else {
+                return null;
+            }
+
+            Drawable d = getResources().getDrawable(id);
+            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            return d;
+        }
+    };
+
+
+    private boolean isDismissible = false;
+
+    @Override
+    public void dismiss() {
+
+        try {
+
+            isDismissible = true;
+            super.dismiss();
+
+            LogUtil.log(getClass().getSimpleName()+"Dialog dismissed!");
+
+        } catch (IllegalStateException ilse) {
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+
+        // So that dialog should not dismiss on orientation change
+        if (isDismissible) {
+
+            // So that dialog can be dismissed
+            super.onDismiss(dialog);
+        }
+    }
+}

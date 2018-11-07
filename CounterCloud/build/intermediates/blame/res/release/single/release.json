@@ -1,0 +1,474 @@
+[
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/menu_cloud_manager_menu.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/menu/cloud_manager_menu.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_action_bar_item_focused.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/action_bar_item_focused.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout-v21_notification_template_custom_big.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_media_action.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_media_action.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-xhdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/xml_settings.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/settings.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_big_media_custom.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_big_media_custom.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_show_tips.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/show_tips.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_settings_preference.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/settings_preference.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/raw_app_survey_data.json.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/raw/app_survey_data.json"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-mdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_app_survey_activity.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/app_survey_activity.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_spinner_default_holo_dark.9.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/spinner_default_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_spinner_default_holo_dark.9.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/spinner_default_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_checkbox_checked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_checkbox_checked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_lines_media.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_lines_media.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_ab_dropdown_navigation_item_background_pressed.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background_pressed.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_event_log_fragment.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/event_log_fragment.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxxhdpi_cc_small_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxxhdpi/cc_small_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout-v21_notification_action_tombstone.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_icon_group.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/xml_searchable.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/searchable.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_cc_notification_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/cc_notification_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_cc_small_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/cc_small_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_action.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_action.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_menu_refresh.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_menu_refresh.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_checkbox_selector.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/checkbox_selector.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxxhdpi_cc_notification_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxxhdpi/cc_notification_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_menu_find.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_menu_find.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_ic_menu_find.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/ic_menu_find.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_media_custom.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_media_custom.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_cloud_manager_activity.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/cloud_manager_activity.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_notification_bg_low.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable/notification_bg_low.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_ab_dropdown_navigation_item_background.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_checkbox_unchecked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_checkbox_unchecked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_big_media_narrow_custom.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_big_media_narrow_custom.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_notification_tile_bg.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable/notification_tile_bg.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-v21_notification_action_background.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-v21/notification_action_background.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_ic_menu_refresh.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/ic_menu_refresh.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_cc_notification_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/cc_notification_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout-v21_notification_action.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_checkbox_checked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_checkbox_checked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_part_time.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_menu_find.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_menu_find.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_sky_gradient.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/sky_gradient.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_spinner_default_holo_dark.9.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/spinner_default_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_event_log_item.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/event_log_item.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_notification_icon_background.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable/notification_icon_background.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_app_background.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/app_background.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_action_tombstone.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_cloud_manager_fragment.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/cloud_manager_fragment.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_cc_notification_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/cc_notification_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_menu_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_menu_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout-v21_notification_template_icon_group.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-mdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-mdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_cloud_manager_item.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/cloud_manager_item.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_content_bg.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/content_bg.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_menu_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_menu_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout-v16_notification_template_custom_big.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout-v16/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/xml_fileprovider.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/fileprovider.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_action_bar_item_pressed.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/action_bar_item_pressed.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_checkbox_unchecked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_checkbox_unchecked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_cloud_main_activity.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/cloud_main_activity.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_checkbox_checked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_checkbox_checked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_ic_checkbox_checked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/ic_checkbox_checked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_ic_menu_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/ic_menu_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_menu_refresh.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_menu_refresh.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/raw_tips.json.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/raw/tips.json"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_media.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_media.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-hdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_ab_dropdown_navigation_item_background_focused.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/ab_dropdown_navigation_item_background_focused.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_notification_bg.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable/notification_bg.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_big_media_narrow.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_big_media_narrow.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_app_survey_fragment.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/app_survey_fragment.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_cc_small_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/cc_small_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable_button_grey.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable/button_grey.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_open_source_license.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/open_source_license.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/menu_cloud_main_menu.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/menu/cloud_main_menu.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_checkbox_unchecked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_checkbox_unchecked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-ldpi_rounded_box.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-ldpi/rounded_box.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xxhdpi_ic_checkbox_unchecked.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xxhdpi/ic_checkbox_unchecked.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_big_media.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_template_big_media.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_custom_big.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/menu_app_survey_menu.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/menu/app_survey_menu.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_media_cancel_action.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/res/layout/notification_media_cancel_action.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_ic_menu_refresh.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/ic_menu_refresh.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_ic_menu_find.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/ic_menu_find.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_notification_template_part_chronometer.xml.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-mdpi_cc_small_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-mdpi/cc_small_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/menu_event_log_menu.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/menu/event_log_menu.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/menu_settings_menu.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/menu/settings_menu.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_cloud_main_fragment.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/cloud_main_fragment.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_cc_small_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/cc_small_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-hdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi_ic_menu_search.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-hdpi/ic_menu_search.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi_cc_notification_icon.png.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/drawable-xhdpi/cc_notification_icon.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_permissions_manager.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/permissions_manager.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-xhdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_custom_dialog.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/custom_dialog.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-hdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-hdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_app_survey_header.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/app_survey_header.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/drawable-xhdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/release/layout_event_log_activity.xml.flat",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/layout/event_log_activity.xml"
+    }
+]

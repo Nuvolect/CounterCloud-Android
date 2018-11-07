@@ -1,0 +1,762 @@
+package com.nuvolect.crypsafe.license;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.IBinder;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.vending.billing.IInAppBillingService;
+import com.nuvolect.crypsafe.R;
+import com.nuvolect.crypsafe.billing.IabHelper;
+import com.nuvolect.crypsafe.billing.IabResult;
+import com.nuvolect.crypsafe.billing.Inventory;
+import com.nuvolect.crypsafe.billing.Purchase;
+import com.nuvolect.crypsafe.billing.SkuDetails;
+import com.nuvolect.crypsafe.util.LogUtil;
+import com.nuvolect.crypsafe.util.Persist;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+/**
+ * Class to manage the license related activities of startup.
+ * In the onCreate method of each entry class of the app call LicenseManager with
+ * a listener to get the LicenseResult.
+ * <pre>
+ * Startup process:
+ *
+ 1. Check time bomb
+ 1.a App expired, LicenseResult.TIME_BOMB
+ 2. Test for premium user, LicenseResult.PREMIUM_USER
+ 3. Test for early adopter, LicenseResult.EARLY_ADOPTER
+ 4. Test for first time startup, if so
+ 4.a Prompt for concurrence with terms and conditions, LicenseResult.REJECT_TERMS
+ 4.b Prompt for a master account (if only 1 account, use it, don't prompt)
+ 5 Check for whitelist user, LicenseResult.WHITELIST_USER
+ 6 Check for premium user, LicenseResult.PREMIUM_USER
+ 7.Check for early adopter, LicenseResult.EARLY_ADOPTER
+ 8 Check if eval time/events remain
+ 8.a Eval is ongoing, LicenseResult.EVAL_USER
+ 8.b Eval has expired, LicenseResult.EVAL_EXPIRED
+ *
+ *</pre>
+ */
+public class LicenseManager {
+
+    private final boolean DEBUG = LogUtil.DEBUG;
+
+    /**
+     * License type is saved in the ordinal position, do not reorder this list.
+     */
+    public enum LicenseResult { NIL, REJECTED_TERMS, TIME_BOMB,
+        WHITELIST_USER, PREMIUM_USER, EVAL_USER, EVAL_EXPIRED, QUERY_SUCCESS, EARLY_ADOPTER }
+
+    private Context m_ctx;
+    private Activity m_act;
+    private static LicenseManager sInstance;
+    boolean mBound = false;
+    final int RC_REQUEST = 10001; // (arbitrary) request code for the purchase flow
+
+    public boolean mIsPremium = false; // Does the user have the premium upgrade?
+
+    IInAppBillingService mInAppBillingService;
+    public IabHelper mInAppPurchaseHelper;
+    private String mLicenseAccount;
+
+    private String[] appSku = {AppSpecific.APP_SKU, };
+
+    /** Short description of current license for the Settings page */
+    public String mLicenseSummary = "";
+
+    private LicenseCallbacks mListener;
+    AlertDialog dialog_alert = null;
+    /**
+     * Manage the class as a singleton.
+     * @param context
+     * @return
+     */
+    public static LicenseManager getInstance(Context context) {
+        if (sInstance == null) {
+            //Always pass in the Application Context
+            sInstance = new LicenseManager(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private LicenseManager(Context context) {
+        m_ctx = context;
+    }
+
+    /**
+     * A callback interface that all activities containing this class must implement.
+     */
+    public interface LicenseCallbacks {
+
+        public void licenseResult(LicenseResult licenseResult);
+
+        public void licenseResult(LicenseResult querySuccess, String skuPurchase, String skuDetails);
+    }
+
+    public void checkLicense(Activity act, LicenseCallbacks listener){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_0");
+
+        m_act = act;
+        mListener = listener;
+
+        step_1a_test_app_expired();
+
+    }
+    private void step_1a_test_app_expired() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_1a_test_app_expired");
+
+        Calendar expirationDate = Calendar.getInstance();
+        expirationDate.set(2016, 2, 1);  //hardcoded Mar 1, 2016 expiration date
+        Calendar t = Calendar.getInstance();  //Calendar with current time/date
+        if (t.after(expirationDate)){
+
+            mLicenseSummary = "The application version has expired and is no longer valid.";
+            mListener.licenseResult( LicenseResult.TIME_BOMB);
+            // All done here, calling class will take over with returned result
+        }else{
+
+            step_2_local_check_premium_user();
+        }
+    }
+
+    private void step_2_local_check_premium_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_2_local_check_premium_user");
+
+        if( LicensePersist.getPremiumUser(m_act)){
+
+            mIsPremium = true;
+            mLicenseSummary = "Premium user registered with account: "
+                    +LicensePersist.getLicenseAccount(m_act);
+            mListener.licenseResult( LicenseResult.PREMIUM_USER);
+        }
+        else
+            step_3_local_check_early_adopter();
+    }
+    private void step_3_local_check_early_adopter(){
+        if(DEBUG)LogUtil.log("LicenseManager: step_3_local_check_early_adopter");
+
+        try {
+//            if( false ){// LicensePersist.isEarlyAdopter(m_act)){
+            if( LicensePersist.isEarlyAdopter(m_act)){
+
+                mIsPremium = true;
+                mLicenseSummary = "Early adopter registered with account: "
+                        +LicensePersist.getLicenseAccount(m_act);
+                mListener.licenseResult( LicenseResult.EARLY_ADOPTER);
+            }
+            else
+                step_4a_check_concurrence_with_terms();
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogUtil.LogType.LICENSE_UTIL, e);
+        }
+    }
+
+    private void step_4a_check_concurrence_with_terms() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_4a_check_concurrence_with_terms");
+
+        if( LicensePersist.getLegalAgree(m_act)){
+
+            step_4b_set_master_account();
+
+        }else{
+
+            String message = "By using this application you agree to "+AppSpecific.TOC_HREF_URL
+                    +" and "+AppSpecific.PP_HREF_URL;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+            builder.setTitle("Please confirm Terms and Conditions and Privacy Policy");
+            builder.setMessage( Html.fromHtml(message));
+            builder.setCancelable(false);
+            builder.setIcon(AppSpecific.small_icon);
+
+            builder.setPositiveButton("I Agree", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int labelIndex) {
+
+                    LicensePersist.setLegalAgree(m_act, true);
+
+                    step_4b_set_master_account();
+                }
+
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+
+                    mListener.licenseResult( LicenseResult.REJECTED_TERMS);
+                    dialog_alert.cancel();
+                    // All done here, calling class will take over with returned result
+                }
+            });
+            dialog_alert = builder.create();
+            dialog_alert.show();
+
+            // Activate the HTML
+            TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void step_4b_set_master_account() {
+        if(DEBUG)LogUtil.log( "LicenseManager: step_4b_set_master_account");
+
+        mLicenseAccount = LicensePersist.getLicenseAccount(m_act);
+        if( mLicenseAccount.isEmpty()){
+
+            final List<String> stringMenu = new ArrayList<String>();
+
+            Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+
+            Account[] myAccounts = AccountManager.get(m_act).getAccounts();
+
+            /* We only want "com.google" accounts, example next line
+             * myAccount.type == com.google, name == matt.kraus@nuvolect.com
+             * myAccount.type == com.linkedin.android, name == mr.matt.kraus@gmail.com
+             * myAccount.type == com.google.android.legacyimap, name == mattkraus@yahoo.com
+             * myAccount.type == com.dropbox.android.account, name == matt.kraus@nuvolect.com
+             */
+
+            for (Account myAccount : myAccounts) {
+
+                if ( myAccount.type.contentEquals("com.google")
+                        && EMAIL_PATTERN.matcher(myAccount.name).matches()){
+
+                    stringMenu.add(myAccount.name.toLowerCase(Locale.US));
+                }
+            }
+            if( stringMenu.size() == 1){
+
+                String myAccount = stringMenu.get(0);
+                String md5 = LicenseUtil.md5(myAccount);
+                Persist.setAccountName(m_act, myAccount);
+                LicensePersist.setLicenseAccount(m_act, myAccount);
+
+                step_5_check_for_whitelist_user();
+            }else{
+                // Multiple accounts, user must choose one
+
+                final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+                builder.setIcon(AppSpecific.small_icon);
+                builder.setCancelable(false);
+                builder.setTitle(
+                        "Select an account to associate with your license")
+                        .setItems( items, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String myAccount = stringMenu.get(which);
+                                String md5 = LicenseUtil.md5(myAccount);
+                                Persist.setAccountName( m_act, myAccount);
+                                LicensePersist.setLicenseAccount(m_act, myAccount);
+
+                                step_5_check_for_whitelist_user();
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }else{
+
+            // User has a master account, proceed to next step
+            step_5_check_for_whitelist_user();
+        }
+    }
+
+    void step_5_check_for_whitelist_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_5_check_for_whitelist_user");
+
+        String whiteListAccount = Whitelist.onWhitelist(m_act);
+
+        if( ! whiteListAccount.isEmpty()) {
+
+            mIsPremium = true;
+            mLicenseSummary = "Whitelist user: " +whiteListAccount;
+            mListener.licenseResult( LicenseResult.WHITELIST_USER);
+            // All done here, calling class will take over with returned result
+        }else{
+
+            step_6_check_for_premium_user();
+        }
+    }
+
+    /**
+     * Earlier we checked persisted data for a premium user.  This method checks with
+     * Google Play for a premium user.
+     */
+    void step_6_check_for_premium_user(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_6_check_for_premium_user");
+
+
+        /*
+         * Start the chain of events to get the purchase inventory.
+         * This method spans time and based on the result will advance to:
+         * Result success: step_6_confirmed_premium_user
+         * Result fail: step_7_check_for_early_adopter_user
+         */
+        startInAppPurchaseHelper(mPurchasedStartAppListener);
+
+    }
+
+    /**
+     * This method is called when purchase sku matching this app is confirmed.
+     * @param act
+     * @param sku_purchase
+     * @param sku_details
+     */
+    public void step_6_confirmed_premium_user(Activity act, String sku_purchase, String sku_details){
+
+        mIsPremium = true;
+        String hardwareId = LicenseUtil.getUniqueInstallId(act);
+        LicensePersist.setPremiumUser(act, true, hardwareId);
+
+        LicensePersist.setLicenseSku(act, sku_purchase);
+        mLicenseSummary = "Premium user: " +LicensePersist.getLicenseAccount(act)
+                +"\n"+sku_details;
+        mListener.licenseResult(LicenseResult.PREMIUM_USER);
+    }
+
+    /**
+     * This method is called when the purchased sku does not match.  The next step is to see
+     * if this user is an early adopter.
+     * @param act
+     */
+    public void step_7_check_for_early_adopter_user(Activity act){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_7_check_for_early_adopter_user");
+
+        m_act = act;
+
+        /**
+         * Set AppSpecific.EARLY_ADOPTER_PERIOD to false when beta phase ends.
+         * This will allow existing early adopters to continue to use the app free
+         * and new users will have the standard free/premium purchase pattern.
+         */
+
+        if( AppSpecific.EARLY_ADOPTER_PERIOD){
+            try {
+
+                LicensePersist.setEarlyAdopter(m_act);
+            } catch (Exception e) {
+                LogUtil.logException(m_act, LogUtil.LogType.LICENSE_UTIL, e);
+            }
+        }
+
+        try {
+//                if( false ){// for testing
+            if( LicensePersist.isEarlyAdopter(m_act)) {
+
+                mIsPremium = true;
+                mLicenseSummary = "Early adopter user: " +LicensePersist.getLicenseAccount(m_act);
+                mListener.licenseResult( LicenseResult.EARLY_ADOPTER);
+                // All done here, calling class will take over with returned result
+            }
+            else{
+
+                step_8_eval_expired_or_ongoing();
+            }
+        } catch (Exception e) {
+            LogUtil.logException(m_act, LogUtil.LogType.LICENSE_UTIL, e);
+        }
+    }
+
+    void step_8_eval_expired_or_ongoing(){
+        if(DEBUG)LogUtil.log( "LicenseManager: step_8_eval_expired_or_ongoing");
+
+        // Check if there is eval time remaining
+        if( LicensePersist.evalExpired(m_act)){
+
+            mIsPremium = false;
+            mLicenseSummary = "Evaluation expired: " +LicensePersist.getLicenseAccount(m_act);
+            mListener.licenseResult( LicenseResult.EVAL_EXPIRED);
+            // All done here, calling class will take over with returned result
+        }
+        else{
+
+            mIsPremium = true;
+            mLicenseSummary = "Evaluation ongoing: " +LicensePersist.getLicenseAccount(m_act);
+            mListener.licenseResult( LicenseResult.EVAL_USER);
+            // All done here, calling class will take over with returned result
+        }
+    }
+
+    /**
+     * Present a dialog informing the user their evaluation has expired with instructions
+     * to buy or acquire a license.
+     * @param act
+     */
+    public void evalExpiredDialog(final Activity act){
+
+        String message =
+                "Thank you for evaluating "+AppSpecific.APP_NAME+". You can buy an "
+                        +" upgrade or continue to use the app without premium features."
+                        +"\n\nPlease consider: unlike free apps and services that "
+                        +"are supported by selling yor private information, "
+                        +AppSpecific.APP_NAME+" is supported only through user license fees.";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(act);
+        builder.setTitle(AppSpecific.APP_NAME+ " evaluation has expired");
+        builder.setMessage(Html.fromHtml(message));
+        builder.setIcon(R.drawable.ss_small_icon);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton("Upgrade", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                AppUpgradeActivity.launchMarketApp(m_act);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                dialog_alert.cancel();
+            }
+        });
+        dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Display a dialog informing the user that this version of the app is no longer functional
+     * and that they should upgrade.
+     * @param act
+     */
+    public void appTimeBombDialog(final Activity act){
+
+        String message = "This application version has expired, please upgrade: "
+                +AppSpecific.GOOGLE_PLAY_HREF_URL;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+        builder.setTitle("Application version has expired");
+        builder.setMessage(Html.fromHtml(message));
+        builder.setIcon(AppSpecific.small_icon);
+        builder.setCancelable(false);
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                dialog_alert.cancel();
+                act.finish();
+            }
+        });
+        dialog_alert = builder.create();
+        dialog_alert.show();
+
+        // Activate the HTML
+        TextView tv = ((TextView) dialog_alert.findViewById(android.R.id.message));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Check if a custom intent such as the Secure Suite LM app is installed
+     * @param ctx
+     * @return
+     */
+    public boolean isIntentAvailable(Context ctx, Intent intent) {
+        final PackageManager mgr = ctx.getPackageManager();
+        List<ResolveInfo> list =
+                mgr.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    /** Return list of SKUs used in the app */
+    public ArrayList<String> getSkuList(){
+
+        final ArrayList<String> skuList = new ArrayList<String> ();
+        skuList.add(AppSpecific.APP_SKU);
+//        skuList.add("android.test.purchased");
+//        skuList.add("android.test.canceled");
+//        skuList.add("android.test.refunded");
+//        skuList.add("android.test.unavailable");
+
+        return skuList;
+    }
+    /**
+     * Start the purchase helper and if successful, advance to the listener method.
+     * This is used when starting up to see if the user purchased an upgrade and it
+     * is used when the user is shopping to buy an upgrade.
+     *
+     * @param gotInventoryListener
+     */
+    void startInAppPurchaseHelper(final IabHelper.QueryInventoryFinishedListener gotInventoryListener ){
+        /*
+         * To establish a connection with the In-app Billing service on Google Play,
+         * implement a ServiceConnection to bind your activity to IInAppBillingService.
+         * Override the onServiceDisconnected and onServiceConnected methods to get a
+         * reference to the IInAppBillingService instance after a connection has been established.
+         */
+        Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        m_ctx.bindService( serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+
+        String clearPublicKey = "";
+//        String base64EncodedPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm5AyEcSM0m/NpOLjUGH/Vt1TpXIE1n3DcuvyPScmw4/MylQg/IXw/3M76FHLLG2j+TThIwHyb7yWfMO+xkyDnMFb8CKcGeXjcOqGD1HvGwOlISozIebPX010GTV3MmMa/J5TBMz/sPk6Eos8sJVytp0vufase24WSHiUUF10OkeYNi80aBSEtAcCbhdqKIqC4YKN1E3Kb56ZlGCE+anKSmBqyFn4cRZoPxsTYzyWxMcE8P/Jvd1CvIEkdbuWYQKtIl/2rQfdT97hJmdDXAulr2U7jXJI9yH9WHQAmVEkxqRfYSOpCc0llPzdF0yjqXWKQj9ncSTZW8AEPMsHZDJtBQIDAQAB";
+//         String cryptoPublicKey="+OCyhs3h5PyovBQzLRs2dtIYoemC+cu1JndaDHLZ6Gyn+ezAzRtukZGnWauFXw2tUwjJsjW2rGnVLht2huSLTgrsA0OTv9YmCcwy8Gqcc2bz30d93ncpuRarnXuQBImYIDyiaUJpaC2zKLO3oIJGb/yEgxOnsbjgYrX6PQ2Hnd1HBHRHh56zJmokjBEZvHXLb86oeNy4ZwfmsdBMoPXd2KNomRhrFy05d35nqKlVvYEjOQ2Z/seEzhMKiFJoxyqWtgnviMLfup0ntmm3nt7VOzCwZe3RxXq7+z1opDzwvNB3rASrzlA8vDlpqkOFCeZIhrWFN05qpmNYO7ZqWhlpkYio17KyHOgf6nGheTOjKtVn9fIMnF5OxMiPqx4py9V8991hJaDc6yZQ3j0uC0tBDz3/TbECbIu8yGC3NKB5+uwh16wPkjPRPKnpoYyFo5g8pJ5QzRD/1MfJPmqxkuewdaoVgUq8ekTDwdg1mFhgjl8DY1CG9xHDK0n4whXxoSOdkJzEUcImi+xc1ofg8Mbk6XeLgTpIsvwIZZxfinzn9pY=";
+        try {
+//            String crypto = BetterCrypto.encrypt(  "34694f5f7969cac1750e084dace6b6c3", base64EncodedPublicKey);
+//             clearPublicKey = BetterCrypto.decrypt("34694f5f7969cac1750e084dace6b6c3", cryptoPublicKey);
+            clearPublicKey = AppSpecific.getClearPublicKey();
+//             if(DEBUG)LogUtil.log( "Crypto: "+crypto);
+//             if(DEBUG)LogUtil.log( "clearPublicKey: "+clearPublicKey);
+//             if(DEBUG)LogUtil.log( "base64EncodedPublicKey: "+base64EncodedPublicKey);
+        } catch (Exception e) {
+            LogUtil.logException(m_ctx, LogUtil.LogType.IN_APP_PAYMENT, e);
+        }
+        final ArrayList<String> skuList = getSkuList();
+
+        if( mInAppPurchaseHelper == null){
+
+            mInAppPurchaseHelper = new IabHelper( m_ctx, clearPublicKey);
+
+            mInAppPurchaseHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                public void onIabSetupFinished(IabResult result) {
+                    if (!result.isSuccess()) {
+                        // There was a problem.
+                        LogUtil.log( "Problem setting up In-app Billing: " + result);
+                        Toast.makeText(m_act, "Google Play license manager failure", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Have we been disposed of in the meantime? If so, quit.
+                    if (mInAppPurchaseHelper == null) {
+
+                        Toast.makeText(m_act, "Google Play communication failure", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(DEBUG)LogUtil.log( "Hooray, IAB is fully set up!");
+                    /*
+                     * Query for all of the items the user currently owns
+                     */
+                    mInAppPurchaseHelper.queryInventoryAsync( true, skuList, gotInventoryListener);
+                }
+            });
+        }else{
+            if(DEBUG)LogUtil.log( "Hooray, IAB is already set up!");
+            /*
+             * The helper may already be running and can throw an exception
+             */
+            try {
+                mInAppPurchaseHelper.queryInventoryAsync( true, skuList, gotInventoryListener);
+            } catch (Exception e) {
+                LogUtil.logException(m_act, LogUtil.LogType.IN_APP_PAYMENT, e);
+            }
+        }
+    }
+    /**
+     * <pre>
+     * Listener that's called when we finish querying the items and subscriptions we own
+     * Start the in-app purchase inventory flow. The results in three outcomes
+     * 1. User is a premium user, no evaluation footers or metrics necessary
+     * 2. User is evaluating the product, show eval footers and metrics
+     * 3. User evaluation has expired, redirect to the upgrade shoppe
+     * </pre>
+     * @param gotInventoryListener
+     */
+    IabHelper.QueryInventoryFinishedListener mPurchasedStartAppListener = new IabHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            if(DEBUG)LogUtil.log("Query inventory finished.");
+
+            // Result is in place, unbind to google service
+//            boolean wasBound = unbindBillingService(m_ctx);
+//            if(DEBUG)LogUtil.log("Unbind from Google Billing, was bound: "+wasBound);
+
+
+            // Have we been disposed of in the meantime? If so, quit.
+            if (mInAppPurchaseHelper == null) return;
+
+            // Is it a failure?
+            if (result.isFailure()) {
+
+                alert("Failed to query inventory: " + result);
+                return;
+            }
+
+            /**
+             * In-app static test purchase is broken.
+             *http://stackoverflow.com/questions/14600664/android-in-app-purchase-signature-verification-failed
+             * Also update Security.java.
+             * Use this to get unstuck:
+             */
+//                if (inventory.hasPurchase("android.test.purchased")) {
+//                    mInAppPurchaseHelper.consumeAsync(inventory.getPurchase("android.test.purchased"),null);
+//                }
+            // end of hack code
+
+            if(DEBUG)LogUtil.log("Query inventory was successful.");
+
+            /*
+             * Check for items we own. Notice that for each purchase, we check
+             * the developer payload to see if it's correct! See verifyDeveloperPayload().
+             * Do this every time for the main activity.
+             */
+            String skuPurchase = "";
+            String skuDetails = "";
+            String md5 = LicensePersist.getAccountMd5(m_ctx);
+            String newLine = "";
+
+            for( String sku : appSku){  // loop through each product and collect details
+
+                Purchase purchase = inventory.getPurchase( sku );
+                if( purchase != null ){
+
+                    String payload = purchase.getDeveloperPayload();
+
+                    if( payload != null && payload.endsWith(md5)){
+
+                        skuPurchase += newLine + payload.replace(md5, "");
+
+                        SkuDetails sku_details = inventory.getSkuDetails( sku );
+                        skuDetails += newLine
+                                +sku+"\n"
+                                +"License account: "+mLicenseAccount+"\n"
+                                +sku_details.getDescription()+"\n" ;
+
+                        newLine = "\n";
+                    }
+                }
+            }
+            if(DEBUG)LogUtil.log("SkuDetails: "+skuDetails);
+
+            if( skuDetails.isEmpty())
+                skuDetails = "No user purchases for "+mLicenseAccount;
+
+            if( skuPurchase.contentEquals(AppSpecific.APP_SKU))
+                step_6_confirmed_premium_user(m_act, skuPurchase, skuDetails);
+            else
+                step_7_check_for_early_adopter_user(m_act);
+
+            mListener.licenseResult( LicenseResult.QUERY_SUCCESS, skuPurchase, skuDetails);
+        }
+
+    };
+
+
+    /**
+     * To establish a connection with the In-app Billing service on Google Play,
+     * implement a ServiceConnection to bind your activity to IInAppBillingService.
+     * Override the onServiceDisconnected and onServiceConnected methods to get a reference
+     * to the IInAppBillingService instance after a connection has been established.
+     */
+    ServiceConnection mServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+            mInAppBillingService = null;
+            mBound = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+
+            mInAppBillingService = IInAppBillingService.Stub.asInterface(service);
+            mBound = true;
+        }
+    };
+
+    public boolean unbindBillingService(Context ctx){
+
+        boolean wasBound = mBound;
+
+        if( mBound && mInAppBillingService != null){
+
+            ctx.unbindService( mServiceConn);
+            mBound = false;
+        }
+        return wasBound;
+    }
+
+    void complain(String message) {
+        if(DEBUG)LogUtil.log("Error: " + message);
+        alert("Error: " + message);
+    }
+
+    void alert(String message) {
+        AlertDialog.Builder bld = new AlertDialog.Builder(m_act);
+        bld.setMessage(message);
+        bld.setNeutralButton("OK", null);
+        bld.setIcon(AppSpecific.small_icon);
+        if(DEBUG)LogUtil.log("Showing alert dialog: " + message);
+        bld.create().show();
+    }
+
+    /** Verifies the developer payload of a purchase. */
+    boolean verifyDeveloperPayload(Context ctx, Purchase p) {
+
+        String payload = p.getDeveloperPayload();
+        String sku = p.getSku();
+        String md5 = LicensePersist.getAccountMd5(ctx);
+
+        if( payload.equals( sku+md5))
+            return true;
+        else
+            return false;
+    }
+    /**
+     * Kickoff the purchase process of a single product
+     * @param act
+     * @param product_sku
+     */
+    public void purchaseLicense( Activity act, String product_sku) {
+
+        String md5 = LicensePersist.getAccountMd5(act);
+        String payload = product_sku+md5;
+        try {
+            if( mInAppPurchaseHelper == null)
+                startInAppPurchaseHelper( null );
+
+            mInAppPurchaseHelper.launchPurchaseFlow(
+                    act, product_sku, RC_REQUEST,
+                    mPurchaseFinishedListener, payload);
+        } catch (Exception e) {
+            LogUtil.logException( act, LogUtil.LogType.IN_APP_PAYMENT, e);
+            Toast.makeText(m_act, "Google Play error", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Callback for when a purchase is finished
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+            if(DEBUG)LogUtil.log( "Purchase finished: " + result + ", purchase: " + purchase);
+
+            // if we were disposed of in the meantime, quit.
+            if (mInAppPurchaseHelper == null) return;
+
+            if (result.isFailure()) {
+                complain("Error purchasing: " + result);
+                //                setWaitScreen(false);
+                return;
+            }
+            if (!verifyDeveloperPayload( m_ctx, purchase)) {
+                complain("Error purchasing. Authenticity verification failed.");
+                //                setWaitScreen(false);
+                return;
+            }
+
+            if(DEBUG)LogUtil.log( "Purchase successful: "+purchase.getSku());
+
+            alert("Thank you for upgrading!");
+        }
+    };
+}

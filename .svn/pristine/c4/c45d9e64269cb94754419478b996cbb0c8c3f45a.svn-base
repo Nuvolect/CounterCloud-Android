@@ -1,0 +1,424 @@
+package com.nuvolect.countercloud.main;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
+import android.widget.Toast;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.data.Persist;
+import com.nuvolect.countercloud.license.AppSpecific;
+import com.nuvolect.countercloud.license.LicenseManager;
+import com.nuvolect.countercloud.license.LicensePersist;
+import com.nuvolect.countercloud.util.ActionBarUtil;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.LogUtil.LogType;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * An activity representing a summary view of cloud data.
+ * <p>
+ * This activity is mostly just a 'shell' activity containing nothing more than
+ * a {@link CloudManagerFragment}.
+ */
+public class CloudMainActivity extends FragmentActivity
+        implements CloudMainFragment.Callbacks {
+
+    private final static boolean DEBUG = LogUtil.DEBUG;
+    static Activity m_act;
+    static Context m_ctx;
+    CloudMainFragment m_main_frag;
+    public static boolean mIsPremium = false; // Does the user have the premium upgrade?
+    public static boolean mWhitelistUser = false; // Is the user on the developer whitelist?
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onCreate()");
+
+        m_act = this;
+        m_ctx = getApplicationContext();
+
+        // Action bar progress setup.  Needs to be called before setting the content view
+        m_act.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
+        setContentView(R.layout.cloud_main_activity);
+
+        LicenseManager.getInstance(m_act).checkLicense(m_act, mLicenseManagerListener);
+    }
+
+    LicenseManager.LicenseCallbacks mLicenseManagerListener = new LicenseManager.LicenseCallbacks(){
+
+        @Override
+        public void licenseResult(LicenseManager.LicenseResult license) {
+
+            if(DEBUG) LogUtil.log("License result: "+license.toString());
+            LicensePersist.setLicenseResult(m_ctx, license);
+
+            switch ( license) {
+                case NIL:
+                    break;
+                case TIME_BOMB:
+                    LicenseManager.getInstance(m_act).appTimeBombDialog(m_act);
+                    break;
+                case REJECTED_TERMS:
+                    m_act.finish();
+                    break;
+                case WHITELIST_USER:
+                    mWhitelistUser = true;// fall through, no break;
+                case PREMIUM_USER:
+                case EARLY_ADOPTER:
+                    mIsPremium = true;
+                    startGui();
+                    break;
+                case EVAL_USER:
+                    mIsPremium = true;// only true during the evaluation period
+                    startGui();
+                    break;
+                case EVAL_EXPIRED: {
+                    mIsPremium = false;
+                    startGui();
+                    if( LicensePersist.timeToNagUser(m_act, AppSpecific.EVAL_EXPIRED_NAG, AppSpecific.EVAL_EXPIRED_NO_NAG_PERIOD))
+                        LicenseManager.getInstance(m_act).evalExpiredDialog(m_act);
+                    break;
+                }
+                default:
+                    break;
+            }
+            Analytics.send( m_ctx,
+                    Analytics.ACT+"CloudMainActivity",
+                    Analytics.LICENSE_ACTIVITY,
+                    license.toString(),
+                    1L);
+        }
+
+        @Override
+        public void licenseResult(LicenseManager.LicenseResult querySuccess, String skuPurchase, String skuDetails) {
+
+            if(DEBUG)LogUtil.log("LicenseManager callbacks querySuccess: "+querySuccess);
+            if(DEBUG)LogUtil.log("LicenseManager callbacks  skuPurchase: "+skuPurchase);
+            if(DEBUG)LogUtil.log("LicenseManager callbacks   skuDetails: "+skuDetails);
+
+            Analytics.send( m_ctx,
+                    Analytics.ACT+"CloudMainActivity",
+                    Analytics.LICENSE_ACTIVITY,
+                    "querySuccess: "+querySuccess,
+                    1L);
+            Analytics.send( m_ctx,
+                    Analytics.ACT+"CloudMainActivity",
+                    Analytics.LICENSE_ACTIVITY,
+                    "skuPurchase: "+skuPurchase,
+                    1L);
+            Analytics.send( m_ctx,
+                    Analytics.ACT+"CloudMainActivity",
+                    Analytics.LICENSE_ACTIVITY,
+                    "skuDetails: "+skuDetails,
+                    1L);
+        }
+    };
+
+    void startGui(){
+
+        // Show the Up button in the action bar.
+        ActionBarUtil.homeAsUpEnabled(m_act, false);
+
+        if( Persist.getTimeLastUpdate( m_ctx) == 0){
+
+            // Starting for first time, clone google db to track changes
+            WorkerCommand.cloneGoogleDb(m_act);
+
+            // Set default settings
+            PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
+            // Set time
+            Persist.setTimeLastUpdate(m_ctx, System.currentTimeMillis());
+        }
+        WorkerCommand.registerCloudObserver(getApplicationContext());
+
+        ActionBarUtil.showTitleEnabled(m_act, true);
+
+        m_main_frag = startCloudMainFragment();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onSaveInstanceState()");
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onResume()");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Analytics.start(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Analytics.stop(this);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onPause()");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.cloud_main_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.menu_accounts:{
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.GOOGLE_ACCOUNTS, 1);
+                // import android.provider.Settings;
+                startActivity(new Intent(Settings.ACTION_SYNC_SETTINGS));
+                break;
+            }
+            case R.id.menu_refresh:{
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.REFRESH, 1);
+
+                if( m_main_frag == null)
+                    m_main_frag = startCloudMainFragment();
+                m_main_frag.resetCloudSummary();
+                Toast.makeText(m_act, "Refresh", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.menu_security_check:{
+
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.SECURITY_CHECK, 1);
+
+                Intent intent = new Intent(this, CloudManagerActivity.class);
+                intent.putExtra(CConst.ACCOUNT_KEY, CConst.ALL_ACCOUNTS);
+                intent.putExtra(CConst.SECURITY_CHECK, true);
+                startActivity(intent);
+                break;
+            }
+            case R.id.menu_event_log:{
+
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.EVENT_LOG, 1);
+
+                Intent intent = new Intent(this, EventLogActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.menu_settings:{
+
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.SETTINGS, 1);
+
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.menu_help:{
+
+                Analytics.send(getApplicationContext(),
+                        Analytics.ACT+"Main",
+                        Analytics.MAIN_ACTIVITY + Analytics.MENU ,
+                        Analytics.HELP, 1);
+
+                String url = AppSpecific.APP_HELP_URL;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                break;
+            }
+
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onActivityResult()");
+
+        switch( requestCode ){
+
+            default:
+                if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "ERROR, CloudMainActivity invalid requestCode: "+requestCode);
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    /**
+     * Callback method indicating that the item with the given ID was selected.
+     */
+    @Override
+    public void onAccountEditSelected(String myAccount) {
+
+        Intent intent = new Intent(this, CloudManagerActivity.class);
+        intent.putExtra(CConst.ACCOUNT_KEY, myAccount);
+        startActivity(intent);
+    }
+    /**
+     * Callback method from {@link ContactListFragment.Callbacks} indicating that
+     * data has changed and the fragment should be refreshed
+     */
+    @Override
+    public void onRefreshFragment() {
+
+        if( m_main_frag == null)
+            m_main_frag = startCloudMainFragment();
+        else
+            refreshCloudMainFragment();
+    }
+
+    /**
+     * Developer menu: in menu order.  Replaces '_' with ' ' on menu.
+     */
+    public static enum DevMenu {
+        Premium_User_Toggle,
+        Early_Adopter_Toggle,
+        Eval_Start,
+        Eval_Expire,
+        Clear_Data_Close_App,
+    };
+
+    static void developerDialog() {
+
+        final List<String> stringMenu = new ArrayList<String>();
+
+        for( DevMenu menuItem : DevMenu.values()){
+
+            String item = menuItem.toString().replace('_', ' ');
+            stringMenu.add( item);
+        }
+        final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
+        builder.setTitle("Developer Menu")
+                .setItems( items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        DevMenu menuItem = DevMenu.values()[which];
+
+                        switch( menuItem){
+
+                            case Premium_User_Toggle:{
+
+                                CloudMainActivity.mIsPremium = ! CloudMainActivity.mIsPremium;
+                                Toast.makeText(m_act, "Is premium user: "
+                                        +CloudMainActivity.mIsPremium, Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            case Early_Adopter_Toggle:{
+
+                                try {
+                                    if( LicensePersist.isEarlyAdopter(m_ctx))
+                                        LicensePersist.clearEarlyAdopter(m_ctx);
+                                    else
+                                        LicensePersist.setEarlyAdopter(m_ctx);
+
+                                    Toast.makeText(m_act, "Is early adopter: "
+                                            +LicensePersist.isEarlyAdopter(m_ctx), Toast.LENGTH_SHORT).show();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }
+                            case Eval_Start:{
+
+                                LicensePersist.diagSetEvalPeriodStart(m_act);
+                                mIsPremium = true;
+                                Toast.makeText(m_act, "mIsPremium: "+mIsPremium, Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            case Eval_Expire:{
+
+                                LicensePersist.diagSetEvalPeriodEnd(m_act);
+                                mIsPremium = false;
+                                Toast.makeText(m_act, "mIsPremium: "+mIsPremium, Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            case Clear_Data_Close_App:{
+
+                                Persist.clearAll(m_ctx);
+                                LicensePersist.clearAll(m_ctx);
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_ctx);
+                                pref.edit().clear().commit();
+                                m_act.finish();
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void refreshCloudMainFragment(){
+
+        if( m_main_frag == null)
+            m_main_frag = startCloudMainFragment();
+        FragmentTransaction ft = m_main_frag.getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.detach(m_main_frag);
+        ft.commit();
+        ft = m_main_frag.getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.attach(m_main_frag);
+        ft.commitAllowingStateLoss();
+    }
+    private CloudMainFragment startCloudMainFragment(){
+
+        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "startCloudMainFragment()");
+
+        CloudMainFragment fragment = new CloudMainFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.cloud_main_container, fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
+        return fragment;
+    }
+}

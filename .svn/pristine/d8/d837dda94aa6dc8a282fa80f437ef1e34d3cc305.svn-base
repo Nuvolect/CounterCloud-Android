@@ -1,0 +1,380 @@
+package com.nuvolect.countercloud.main;//
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import com.nuvolect.countercloud.R;
+import com.nuvolect.countercloud.util.Analytics;
+import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.util.PermissionUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+//TODO create class description
+//
+public class AppSurveyFragment extends Fragment {
+
+    Activity m_act;
+    Context m_ctx;
+
+    private View m_rootView;
+    private LayoutInflater m_inflater;
+    private ViewGroup m_container;
+
+    private AsyncTask<Void, Void, Void> m_queryAppsAsyncTask;
+    private ArrayList<AppItem> m_appItems;
+    private JSONObject m_appObj;
+    private boolean m_totalPublished;
+    private float iconSizeDp = 50;
+
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public AppSurveyFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LogUtil.log(LogUtil.LogType.APP_SURVEY_FRAGMENT, "onCreate()");
+
+        m_act = getActivity();
+        m_ctx = m_act.getApplicationContext();
+        m_totalPublished = false;
+
+        /**
+         * Load packages from raw resources into a JSON array
+         */
+        String fileContents = "";
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            InputStream is = m_act.getResources().openRawResource(R.raw.app_survey_data);
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+
+                String s = new String( buffer, 0, len, "UTF-8");
+                sb.append( s );
+            }
+            fileContents = sb.toString();
+
+            if( is != null)
+                is.close();
+        } catch (FileNotFoundException e) {
+            LogUtil.logException(LogUtil.LogType.APP_SURVEY_FRAGMENT, e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Build the JSON array
+         */
+        try {
+
+            m_appObj= new JSONObject( fileContents );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtil.log( LogUtil.LogType.APP_SURVEY_FRAGMENT, "onResume()");
+
+        m_queryAppsAsyncTask = new QueryAppsAsync().execute();
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        LogUtil.log(LogUtil.LogType.APP_SURVEY_FRAGMENT, "onCreateView()");
+
+        m_inflater = inflater;// Save for refresh
+        m_container = container;
+        m_rootView = inflater.inflate(R.layout.app_survey_fragment, container, false);
+
+        return m_rootView;
+    }
+
+    public void refreshSurvey() {
+
+        m_queryAppsAsyncTask = new QueryAppsAsync().execute();
+    }
+
+    private class QueryAppsAsync extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void...arg0) {
+
+            generateAppSurvey();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+
+            if( m_act == null || m_act.isFinishing())
+                return;
+
+            buildView();
+        }
+    }
+
+    private void generateAppSurvey() {
+
+        PackageManager pm = m_ctx.getPackageManager();
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        /**
+         * Save preferences.  Manage lists to have same number of elements.
+         */
+        m_appItems = new ArrayList<AppItem>();
+
+        for (ApplicationInfo applicationInfo : packages) {
+            try {
+                PackageInfo packageInfo = pm.getPackageInfo(applicationInfo.packageName, PackageManager.GET_PERMISSIONS);
+
+                //Get Permissions
+                String[] requestedPermissions = packageInfo.requestedPermissions;
+                boolean readHit = false;
+                boolean writeHit = false;
+                AppItem appItem = new AppItem();
+
+                if(requestedPermissions != null) {
+                    for (int i = 0; i < requestedPermissions.length; i++) {
+
+                        if( requestedPermissions[i].contains("CONTACTS")) {
+
+                            if( requestedPermissions[i].contains("READ_CONTACTS")){
+
+                                appItem.appReadPriv = true;
+                                readHit = true;
+                            }
+
+                            if( requestedPermissions[i].contains("WRITE_CONTACTS")){
+
+                                appItem.appWritePriv = true;
+                                writeHit = true;
+                            }
+                        }
+                    }
+                    if(readHit || writeHit){
+
+                        appItem.appIcon = applicationInfo.loadIcon(pm);
+                        appItem.appName = String.valueOf(applicationInfo.loadLabel(pm));
+                        appItem.appPackageName = applicationInfo.packageName;
+                        m_appItems.add(appItem);
+
+                        /**
+                         * Look for unknown and custom packages and publish to analytics.
+                         * Ignore android, google and standard packages.
+                         */
+                        String val = m_appObj.optString(appItem.appPackageName,"unknown");
+
+                        if( val.contentEquals("unknown")){
+
+                            try {
+                                m_appObj.put(appItem.appPackageName,"published");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            String appInfo = "\"" + applicationInfo.packageName +"\":\"custom\"";
+                            LogUtil.log(LogUtil.LogType.APP_SURVEY_FRAGMENT, appInfo);
+
+                            Analytics.send(m_act,
+                                    Analytics.ACT + "AppSurvey",
+                                    Analytics.APP_UNKNOWN+"-"+appItem.appPackageName,
+                                    Analytics.COUNT, 1);
+                        }else{
+
+                            if( val.contentEquals("custom")){
+
+                                try {
+                                    m_appObj.put(appItem.appPackageName,"published");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Analytics.send(m_act,
+                                        Analytics.ACT + "AppSurvey",
+                                        Analytics.APP_CUSTOM+"-"+appItem.appPackageName,
+                                        Analytics.COUNT, 1);
+                            }
+                        }
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        LogUtil.log(LogUtil.LogType.APP_SURVEY_FRAGMENT, "Survey size: " + m_appItems.size());
+
+        // Sort on App Name
+        m_appItems = sortApps(m_appItems);
+
+        if( ! m_totalPublished){
+
+            m_totalPublished = true;
+
+            int appVersion = 0;
+            try {
+                appVersion = m_act.getPackageManager().getPackageInfo(
+                        m_act.getPackageName(), 0).versionCode;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            Analytics.send(m_act,
+                    Analytics.ACT + "AppSurvey",
+                    Analytics.APP_TOTAL+"-appVer:"+appVersion+", sdk:"+Build.VERSION.SDK_INT,
+                    Analytics.COUNT, m_appItems.size());
+        }
+    }
+
+    // On the UI thread, build the view
+    private void buildView() {
+
+        TableLayout tableLayout = (TableLayout) m_rootView.findViewById(R.id.surveyTable);
+        tableLayout.removeAllViews();
+
+        View headerRow = m_inflater.inflate(R.layout.app_survey_header, m_container, false);
+        tableLayout.addView(headerRow);
+
+        int iconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                iconSizeDp, getResources().getDisplayMetrics());
+
+        for( int appIndex = 0; appIndex < m_appItems.size(); ++appIndex){
+
+            final AppItem appItem = m_appItems.get(appIndex);
+
+            // Create a table row and add all the parts and add the row to the view
+            TableRow tableRow = new TableRow(m_act);
+            tableRow.setVerticalGravity(Gravity.CENTER_VERTICAL);
+            tableRow.setTag(appIndex);
+            tableRow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int index = (int) v.getTag();
+                    PermissionUtil.showInstalledAppDetails(m_act, appItem.appPackageName);
+                }
+            });
+
+            ImageView iv = new ImageView(m_act);
+            TableRow.LayoutParams params = new TableRow.LayoutParams(iconSize, iconSize);
+            iv.setLayoutParams(params);
+
+            if( appItem.appIcon != null)
+                iv.setImageDrawable(appItem.appIcon);
+            else
+                iv.setImageDrawable(getResources().getDrawable(R.drawable.ic_search));
+
+            tableRow.addView(iv);
+
+            TextView tv = customTextView(m_act, false);
+            tv.setPadding(5, 0, 0, 0);
+            if( appItem.appName != null)
+                tv.setText( appItem.appName);
+            else
+                tv.setText(" ");
+            tableRow.addView(tv);
+
+            tv = customTextView(m_act, true);
+            tv.setText( appItem.appReadPriv ? "X" : " ");
+            tableRow.addView(tv);
+
+            tv = customTextView(m_act, true);
+            tv.setText( appItem.appWritePriv ? "X" : " ");
+            tableRow.addView(tv);
+
+            // Finally add the row to the view
+            tableLayout.addView(tableRow);
+        }
+
+        TextView tv = (TextView) m_rootView.findViewById(R.id.surveySummaryTv);
+        tv.setText("Total: "+m_appItems.size()+" apps");
+    }
+
+    public class AppItem {
+
+        public boolean appWritePriv;
+        public boolean appReadPriv;
+        public String appName;
+        public Drawable appIcon;
+        public String appPackageName;
+
+        public AppItem(){
+            appWritePriv = false;
+            appReadPriv = false;
+            appName = "";
+            appIcon = null;
+            appPackageName = "";
+        }
+    }
+
+    /**
+     *  Comparator for sorting Apps by name.
+     */
+    public static class CustomComparatorName implements Comparator<AppItem> {
+
+        public int compare(AppItem a1, AppItem a2){
+            String s1 = a1.appName;
+            String s2 = a2.appName;
+            return s1 .compareTo( s2);
+        }
+    }
+
+    /**
+     * Sort Apps by name
+     * @param unsortedApps
+     * @return sorted ArrayList of Apps
+     */
+    public static ArrayList<AppItem> sortApps(ArrayList<AppItem> unsortedApps){
+
+        Collections.sort(unsortedApps, new CustomComparatorName());
+
+        return unsortedApps;
+    }
+
+    private TextView customTextView(Activity act, boolean centerHorizontal) {
+
+        TextView tv = new TextView(act);
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        if(centerHorizontal)
+            tv.setGravity( Gravity.CENTER_HORIZONTAL);
+
+        return tv;
+    }
+}

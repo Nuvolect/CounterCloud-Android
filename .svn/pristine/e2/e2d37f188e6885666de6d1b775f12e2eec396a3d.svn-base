@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black"          >#FF000000</color>
+    <color name="blacktrans"     >#88000000</color>
+    <color name="blue"           >#FF0000ff</color>
+    <color name="bluedark"       >#FF00008b</color>
+    <color name="bluelight"      >#FF7C9BA5</color>
+    <color name="bluelighttrans" >#ccadd8e6</color>
+    <color name="bluegreen"      >#FF1F637A</color>
+    <color name="blueStart"      >#FF3567B8</color>
+    <color name="blueEnd"        >#FF00008b</color>
+    <color name="green"          >#FF00b300</color>
+    <color name="greentrans"     >#cc00b300</color>
+    <color name="greendark"      >#FF013220</color>
+    <color name="greendarktrans" >#cc013220</color>
+    <color name="greenlight"     >#FF90ee90</color>
+    <color name="greenlighttrans">#cc90ee90</color>
+    <color name="grey"           >#FF808080</color>
+    <color name="greydark"       >#FF525252</color>
+    <color name="greydarktrans"  >#cc525252</color>
+    <color name="greylight"      >#ccd8d8d8</color>
+    <color name="greylighttrans" >#ccbebebe</color>
+    <color name="greytrans"      >#cc808080</color>
+    <color name="lightgrey"      >#FFbebebe</color>
+    <color name="linen"          >#FFFAF0E6</color>
+    <color name="lavender"       >#FFE6E6FA</color>
+    <color name="navy"           >#FF000080</color>
+    <color name="orange"         >#FFffa500</color>
+    <color name="orangedark"     >#FFb36200</color>
+    <color name="purple"         >#FF800080</color>
+    <color name="purpledark"     >#FF4d004d</color>
+    <color name="red"            >#FFff0000</color>
+    <color name="reddark"        >#FF580000</color>
+    <color name="tan"            >#ffd2b48c</color>
+    <color name="tandark"        >#ff918151</color>
+    <color name="tandarktrans"   >#cc918151</color>
+    <color name="tanlight"       >#ffe8d8c3</color>
+    <color name="tanlighttrans"  >#cce8d8c3</color>
+    <color name="tantrans"       >#ccd2b48c</color>
+    <color name="teal"           >#ff008080</color>
+    <color name="white"          >#FFFFFFFF</color>
+    <color name="whitetrans"     >#ccFFFFFF</color>
+    <color name="transparent"    >#00000000</color>
+
+    <!-- Color of the background of the action bar when highlighted (ie. pressed, focused) -->
+    <color name="action_bar_background_highlight">#cecece</color>
+
+</resources>

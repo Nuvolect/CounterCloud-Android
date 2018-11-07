@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/xml/searchable.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/searchable.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/xml/settings.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/settings.xml"
+    },
+    {
+        "merged": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/build/intermediates/res/merged/debug/xml/fileprovider.xml",
+        "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/xml/fileprovider.xml"
+    }
+]
