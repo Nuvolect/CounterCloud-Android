@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.license.AppSpecific;
 import com.nuvolect.countercloud.util.ActionBarUtil;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.PermissionManager;
 import com.nuvolect.countercloud.util.ShowTips;
@@ -49,14 +48,12 @@ public class SettingsActivity extends PreferenceActivity
     public void onStart() {
         super.onStart();
 
-        Analytics.start(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Analytics.stop(this);
     }
 
     @Override

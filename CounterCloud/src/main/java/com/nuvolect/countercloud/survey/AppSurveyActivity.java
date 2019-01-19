@@ -15,7 +15,6 @@ import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.license.AppSpecific;
 import com.nuvolect.countercloud.main.CConst;
 import com.nuvolect.countercloud.main.SettingsActivity;
-import com.nuvolect.countercloud.util.Analytics;
 
 //TODO create class description
 //
@@ -64,22 +63,12 @@ public class AppSurveyActivity extends FragmentActivity {
             }
             case R.id.menu_settings:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.SURVEY_MENU,
-                        Analytics.SETTINGS,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
 
                 break;
             }
             case R.id.menu_help:{
-
-                Analytics.send(getApplicationContext(),
-                        Analytics.SURVEY_MENU,
-                        Analytics.HELP ,
-                        Analytics.COUNT, 1);
 
                 String url = AppSpecific.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);

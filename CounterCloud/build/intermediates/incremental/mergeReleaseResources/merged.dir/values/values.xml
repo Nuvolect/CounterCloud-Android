@@ -12,9 +12,6 @@
         <item>Select Unstarred</item>
     </string-array>
     <attr format="reference" name="coordinatorLayoutStyle"/>
-    <bool name="ga_autoActivityTracking">true</bool>
-    <bool name="ga_logLevel">true</bool>
-    <bool name="ga_reportUncaughtExceptions">true</bool>
     <color name="action_bar_background_highlight">#cecece</color>
     <color name="black">#FF000000</color>
     <color name="blacktrans">#88000000</color>
@@ -336,7 +333,6 @@
     <item name="text2" type="id"/>
     <item name="title" type="id"/>
     <integer name="cancel_button_image_alpha">127</integer>
-    <integer name="ga_dispatchPeriod">30</integer>
     <integer name="status_bar_notification_info_maxnum">999</integer>
     <string name="action_settings">Settings</string>
     <string name="add_contact">Add Contact</string>
@@ -352,7 +348,6 @@
     <string name="edit_title">Edit</string>
     <string name="email_address">Email Address</string>
     <string name="first_name">First Name</string>
-    <string name="ga_trackingId">UA-76952353-1</string>
     <string name="home_address">Address</string>
     <string name="last_name">Last Name</string>
     <string name="loading">Loading...</string>

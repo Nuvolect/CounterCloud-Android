@@ -7,7 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 
 import org.json.JSONException;
@@ -179,18 +178,6 @@ public class AppSurveyExec {
                         appObj.put(LAST_UPDATE_TIME, packageInfo.lastUpdateTime);
                         appObj.put(FIRST_INSTALLATION_TIME, packageInfo.firstInstallTime);
 
-//                        LogUtil.log(""+appObj.toString(4));
-
-//                        if( applicationInfo.processName.contains("nuvolect"))
-//                        LogUtil.log(
-//                                applicationInfo.loadLabel(pm)+
-//                                ", lastUpdateTime: "+ TimeUtil.friendlyTimeString(packageInfo.lastUpdateTime)+
-//                        ", firstInstallTime: "+ TimeUtil.friendlyTimeString(packageInfo.firstInstallTime));
-//
-                        publishTotal += Publish.getInstance(ctx)
-                                .publishCond7Days( appObj.toString(), Analytics.SURVEY_JSON_04,
-                                        applicationInfo.packageName);
-
                         if( targetAppObj != null)
                             ++targetAppsTotal;
                     }
@@ -203,15 +190,6 @@ public class AppSurveyExec {
             }
         }
         LogUtil.log(LogUtil.LogType.APP_SURVEY, "Total published: "+publishTotal);
-
-        // Publish the number of apps along with app version and SDK.
-        Publish.getInstance(ctx).publishCondTotal7Days(targetAppsTotal);
-
-        // Persist survey timers
-        Publish.getInstance(ctx).surveySave();
-
-        // Publish make_model of device
-        Publish.getInstance(ctx).publishMakeModel();
     }
 
 

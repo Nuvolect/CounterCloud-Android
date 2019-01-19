@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.nuvolect.countercloud.data.Persist;
 import com.nuvolect.countercloud.license.LicensePersist;
-import com.nuvolect.countercloud.survey.Publish;
 import com.nuvolect.countercloud.util.CustomDialog;
 import com.nuvolect.countercloud.util.NotificationUtil;
 
@@ -41,7 +40,6 @@ public class DeveloperDialog {
         Decrement_app_version,
         Clear_data_close_app,
         Create_Notification,
-        Publish_App_Survey,
         Test_RateThisApp,
         Test_MakeDonation,
         Test_MakeModel,
@@ -98,10 +96,6 @@ public class DeveloperDialog {
                                         "Title part: " + notifNum, "Small text part: " + notifNum);
                                 break;
                             }
-                            case Publish_App_Survey:{
-                                WorkerCommand.publishAppSurvey(m_act);
-                                break;
-                            }
                             case  Test_RateThisApp:{
 
                                 CustomDialog.rateThisApp(m_act, true);
@@ -110,11 +104,6 @@ public class DeveloperDialog {
                             case  Test_MakeDonation:{
 
                                 CustomDialog.makeDonation(m_act, true);
-                                break;
-                            }
-                            case Test_MakeModel:{
-
-                                Publish.getInstance(m_act).publishMakeModel();
                                 break;
                             }
                             default:

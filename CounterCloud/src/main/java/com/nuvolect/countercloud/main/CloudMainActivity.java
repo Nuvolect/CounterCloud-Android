@@ -23,7 +23,6 @@ import com.nuvolect.countercloud.license.LicensePersist;
 import com.nuvolect.countercloud.license.LicenseUtil;
 import com.nuvolect.countercloud.survey.AppSurveyActivity;
 import com.nuvolect.countercloud.util.ActionBarUtil;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.DialogUtil;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.LogUtil.LogType;
@@ -99,10 +98,6 @@ public class CloudMainActivity extends FragmentActivity
                 default:
                     break;
             }
-            Analytics.send( m_ctx,
-                    Analytics.MAIN,
-                    license.toString(),
-                    Analytics.COUNT, 1L);
         }
     };
 
@@ -140,15 +135,13 @@ public class CloudMainActivity extends FragmentActivity
     public void onStart() {
         super.onStart();
 
-        Analytics.start(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        Analytics.stop(this);
     }
+    
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -205,10 +198,6 @@ public class CloudMainActivity extends FragmentActivity
         switch (item.getItemId()) {
 
             case R.id.menu_refresh:{
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.REFRESH,
-                        Analytics.COUNT, 1);
 
                 if( m_main_frag == null)
                     m_main_frag = startCloudMainFragment();
@@ -218,11 +207,6 @@ public class CloudMainActivity extends FragmentActivity
             }
             case R.id.menu_security_check:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.SECURITY_CHECK,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, CloudManagerActivity.class);
                 intent.putExtra(CConst.ACCOUNT_KEY, CConst.ALL_ACCOUNTS);
                 intent.putExtra(CConst.SECURITY_CHECK, true);
@@ -231,21 +215,11 @@ public class CloudMainActivity extends FragmentActivity
             }
             case R.id.menu_event_log:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.EVENT_LOG,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, EventLogActivity.class);
                 startActivity(intent);
                 break;
             }
             case R.id.menu_app_survey:{
-
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.APP_SURVEY ,
-                        Analytics.COUNT, 1);
 
                 Intent intent = new Intent(this, AppSurveyActivity.class);
                 startActivity(intent);
@@ -253,21 +227,11 @@ public class CloudMainActivity extends FragmentActivity
             }
             case R.id.menu_settings:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.SETTINGS,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
             }
             case R.id.menu_help:{
-
-                Analytics.send(getApplicationContext(),
-                        Analytics.MAIN_MENU,
-                        Analytics.HELP,
-                        Analytics.COUNT, 1);
 
                 String url = AppSpecific.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);
@@ -341,10 +305,6 @@ public class CloudMainActivity extends FragmentActivity
     }
 
     public void appSurveySummaryOnClick(View view) {
-        Analytics.send(getApplicationContext(),
-                Analytics.MAIN_CLICK,
-                Analytics.APP_SURVEY,
-                Analytics.COUNT, 1);
 
         Intent intent = new Intent(this, AppSurveyActivity.class);
         startActivity(intent);

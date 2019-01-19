@@ -14,7 +14,6 @@ import android.view.MenuItem;
 
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.license.AppSpecific;
-import com.nuvolect.countercloud.util.Analytics;
 
 public class CloudManagerActivity extends FragmentActivity
         implements CloudManagerFragment.Callbacks {
@@ -58,14 +57,12 @@ public class CloudManagerActivity extends FragmentActivity
     public void onStart() {
         super.onStart();
 
-        Analytics.start(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Analytics.stop(this);
     }
 
 
@@ -89,11 +86,6 @@ public class CloudManagerActivity extends FragmentActivity
             }
             case R.id.menu_event_log:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.MANAGER_MENU,
-                        Analytics.EVENT_LOG,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, EventLogActivity.class);
                 startActivity(intent);
                 break;
@@ -101,22 +93,12 @@ public class CloudManagerActivity extends FragmentActivity
 
             case R.id.menu_settings:{
 
-                Analytics.send(getApplicationContext(),
-                        Analytics.MANAGER_MENU,
-                        Analytics.SETTINGS,
-                        Analytics.COUNT, 1);
-
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
 
                 break;
             }
             case R.id.menu_help:{
-
-                Analytics.send(getApplicationContext(),
-                        Analytics.MANAGER_MENU,
-                        Analytics.HELP,
-                        Analytics.COUNT, 1);
 
                 String url = AppSpecific.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);

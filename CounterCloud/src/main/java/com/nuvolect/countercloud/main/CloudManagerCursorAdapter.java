@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.data.DbProvider.SSTab;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.Util;
 
@@ -142,20 +141,11 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
                     m_delete_set.remove( _id);
                     m_cb.setChecked( false );
 
-                    Analytics.send(m_ctx,
-                            Analytics.MANAGER_CLICK,
-                            Analytics.UNCHECKED,
-                            Analytics.COUNT, 1);
                 }else{
 
                     // Select it
                     m_delete_set.add( _id );
                     m_cb.setChecked( true );
-
-                    Analytics.send(m_ctx,
-                            Analytics.MANAGER_CLICK,
-                            Analytics.CHECKED,
-                            Analytics.COUNT, 1);
                 }
             }});
         String s ="";
@@ -206,11 +196,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
                 long contact_id = (Long) nameTv2.getTag();
 
                 m_listener.itemClick(contact_id);
-
-                Analytics.send(m_ctx,
-                        Analytics.MANAGER_CLICK,
-                        Analytics.CLOUD_ITEM,
-                        Analytics.COUNT, 1);
             }
         });
     }
@@ -310,13 +295,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
             return MIME_TYPE.USER_DEFINED;
 
         LogUtil.log("Cloud Manager unknown mimetype: "+mimeType);
-
-        //TODO look for unknown_mime_xxxx in analytics
-        Analytics.send( m_ctx,
-                Analytics.MANAGER,
-                Analytics.ADAPTER,
-                "unknown_mime_"+mimeType,
-                1);
 
         return MIME_TYPE.UNKNOWN;
     }
@@ -466,10 +444,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
                         if( progressDialog != null && progressDialog.isShowing())
                             progressDialog.dismiss();
 
-                        Analytics.send(m_ctx,
-                                Analytics.MANAGER_CLICK,
-                                Analytics.DELETE_CANCEL,
-                                Analytics.COUNT, 1);
                     }
                 });
         progressDialog.setProgress(0);
@@ -553,11 +527,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
                 listener.deleteSuccess(m_deleted);
             }
         }.execute();
-
-        Analytics.send(m_ctx,
-                Analytics.MANAGER_CLICK,
-                Analytics.DELETED,
-                Analytics.COUNT, (long)m_deleted);
 
         return m_deleted;
     }

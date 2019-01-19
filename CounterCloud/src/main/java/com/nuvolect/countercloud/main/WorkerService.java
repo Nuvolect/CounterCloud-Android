@@ -17,7 +17,6 @@ import android.provider.ContactsContract;
 import com.nuvolect.countercloud.data.DbProvider;
 import com.nuvolect.countercloud.data.DbProvider.CloudUpdate;
 import com.nuvolect.countercloud.survey.AppSurveyExec;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.LogUtil.LogType;
 import com.nuvolect.countercloud.util.NotificationUtil;
@@ -246,25 +245,6 @@ public class WorkerService extends Service {
 
                     CloudUpdate cloudUpdate = DbProvider.compareCloudToLocalDb(m_ctx);
                     notifyList( cloudUpdate.m_changeList );
-
-                    if( cloudUpdate.m_added > 0){
-                        Analytics.send(m_ctx,
-                                Analytics.SERV + "WorkerService",
-                                Analytics.OBSERVER,
-                                Analytics.ADDED, cloudUpdate.m_added);
-                    }
-                    if( cloudUpdate.m_updated > 0){
-                        Analytics.send( m_ctx,
-                                Analytics.SERV+"WorkerService",
-                                Analytics.OBSERVER,
-                                Analytics.UPDATED, cloudUpdate.m_added);
-                    }
-                    if( cloudUpdate.m_deleted > 0){
-                        Analytics.send( m_ctx,
-                                Analytics.SERV+"WorkerService",
-                                Analytics.OBSERVER,
-                                Analytics.DELETED, cloudUpdate.m_added);
-                    }
 
                     if(DEBUG)LogUtil.log("ContactMonitorService, update: "+cloudUpdate.m_changeList.toString());
                     break;

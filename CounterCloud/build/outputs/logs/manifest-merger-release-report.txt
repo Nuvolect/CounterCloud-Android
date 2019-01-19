@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
 MERGED from [com.android.support:support-v4:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-v4-28.0.0.aar/51cab849a1246e341a1a01244ea9e6c4/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-media-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-fragment:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-fragment-28.0.0.aar/851bdfe3fdb08645e429121238f9118b/AndroidManifest.xml:17:1-22:12
@@ -29,119 +29,55 @@ MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/mattkraus/.gradle/ca
 MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/74915e071f3465c7b3dccf3c88d73030/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.1.aar/4dd74afba0a76c795a5ee615d547128d/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/793d7313f6463371a6b16e85720008e7/AndroidManifest.xml:17:1-22:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-101:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
 	package
 		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:3:5-40
 		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
 		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
 	android:versionName
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:5:5-28
 		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:1-97:12
 		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:2:11-69
-	android:versionCode
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:4:5-28
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
-uses-sdk
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-MERGED from [com.android.support:support-v4:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-v4-28.0.0.aar/51cab849a1246e341a1a01244ea9e6c4/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-v4:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-v4-28.0.0.aar/51cab849a1246e341a1a01244ea9e6c4/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-media-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-media-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-fragment:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-fragment-28.0.0.aar/851bdfe3fdb08645e429121238f9118b/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-fragment:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-fragment-28.0.0.aar/851bdfe3fdb08645e429121238f9118b/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-core-ui:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-ui-28.0.0.aar/4b8e500fe9b7380c0a06ccca3ba6bc3b/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-core-ui:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-ui-28.0.0.aar/4b8e500fe9b7380c0a06ccca3ba6bc3b/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-core-utils:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-utils-28.0.0.aar/1c508396f5063d701071750bbefbed91/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-core-utils:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-utils-28.0.0.aar/1c508396f5063d701071750bbefbed91/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:loader:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/loader-28.0.0.aar/7f9084269625592d32180502e8392690/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:loader:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/loader-28.0.0.aar/7f9084269625592d32180502e8392690/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:viewpager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewpager-28.0.0.aar/5e1df951cd9e026d2c5d21d5e5025fc2/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:viewpager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewpager-28.0.0.aar/5e1df951cd9e026d2c5d21d5e5025fc2/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/coordinatorlayout-28.0.0.aar/05c215ff90ff3349ed6e553d28420987/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/coordinatorlayout-28.0.0.aar/05c215ff90ff3349ed6e553d28420987/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:drawerlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/drawerlayout-28.0.0.aar/cc2dc477955a7eaa1d284f41ba71b840/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:drawerlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/drawerlayout-28.0.0.aar/cc2dc477955a7eaa1d284f41ba71b840/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/slidingpanelayout-28.0.0.aar/246475040b8733d08f301573ace0fc7e/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/slidingpanelayout-28.0.0.aar/246475040b8733d08f301573ace0fc7e/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:customview:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/customview-28.0.0.aar/7ace5bb113e37c1d2422e2bcc6530a79/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:customview:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/customview-28.0.0.aar/7ace5bb113e37c1d2422e2bcc6530a79/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/swiperefreshlayout-28.0.0.aar/19618aeaf93968200543263af8affbae/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/swiperefreshlayout-28.0.0.aar/19618aeaf93968200543263af8affbae/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/asynclayoutinflater-28.0.0.aar/1d0a5b63b6eaaa153c203ebae4b31f66/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/asynclayoutinflater-28.0.0.aar/1d0a5b63b6eaaa153c203ebae4b31f66/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/versionedparcelable-28.0.0.aar/8bfcdf5d6cba5310582f939406c91a2e/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/versionedparcelable-28.0.0.aar/8bfcdf5d6cba5310582f939406c91a2e/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/59d6fe387d0a0dc22430a27fb8c3fcb1/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/59d6fe387d0a0dc22430a27fb8c3fcb1/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:documentfile:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/documentfile-28.0.0.aar/701e42eb1c4fc172f79bda3c0b61d998/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:documentfile:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/documentfile-28.0.0.aar/701e42eb1c4fc172f79bda3c0b61d998/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/localbroadcastmanager-28.0.0.aar/0f7bcbf62126e55144eb03678660e6c6/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/localbroadcastmanager-28.0.0.aar/0f7bcbf62126e55144eb03678660e6c6/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:print:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/print-28.0.0.aar/be5e6630415bb1fbb3a166df96f8fd02/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:print:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/print-28.0.0.aar/be5e6630415bb1fbb3a166df96f8fd02/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:interpolator:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/interpolator-28.0.0.aar/bd2eaf807adc4ee82780e69c64ab664a/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:interpolator:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/interpolator-28.0.0.aar/bd2eaf807adc4ee82780e69c64ab664a/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:cursoradapter:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/cursoradapter-28.0.0.aar/c227cc6c60708df05997fe15b73ee642/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:cursoradapter:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/cursoradapter-28.0.0.aar/c227cc6c60708df05997fe15b73ee642/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.1.aar/1e5012e0a5618644ed0eb69a6475bcc0/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.1.aar/1e5012e0a5618644ed0eb69a6475bcc0/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/74915e071f3465c7b3dccf3c88d73030/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/74915e071f3465c7b3dccf3c88d73030/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.1.aar/4dd74afba0a76c795a5ee615d547128d/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.1.aar/4dd74afba0a76c795a5ee615d547128d/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.core:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/793d7313f6463371a6b16e85720008e7/AndroidManifest.xml:20:5-44
-MERGED from [android.arch.core:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/793d7313f6463371a6b16e85720008e7/AndroidManifest.xml:20:5-44
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-	android:targetSdkVersion
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:8:9-37
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
-	android:minSdkVersion
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-8:40
-		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
 uses-permission#android.permission.ACCESS_NETWORaK_STATE
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:10:5-80
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:6:5-80
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:10:22-77
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:6:22-77
 uses-permission#android.permission.GET_ACCOUNTS
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:11:5-71
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:5-71
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:11:22-68
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:7:22-68
 uses-permission#android.permission.INTERNET
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:12:5-67
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:8:5-67
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:12:22-64
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:8:22-64
 uses-permission#android.permission.READ_CONTACTS
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:13:5-72
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:9:5-72
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:13:22-69
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:9:22-69
 uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:14:5-81
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:10:5-81
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:14:22-78
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:10:22-78
 uses-permission#android.permission.WRITE_CONTACTS
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:15:5-73
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:11:5-73
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:15:22-70
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:11:22-70
 supports-screens
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:17:5-81
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:13:5-81
 	android:largeScreens
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:17:23-50
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:13:23-50
 	android:xlargeScreens
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:17:51-79
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:13:51-79
 application
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:19:5-99:19
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:15:5-95:19
 MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/versionedparcelable-28.0.0.aar/8bfcdf5d6cba5310582f939406c91a2e/AndroidManifest.xml:22:5-23:19
@@ -149,122 +85,186 @@ MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.g
 	android:appComponentFactory
 		ADDED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:22:18-91
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:22:9-41
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:18:9-41
 	android:icon
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:21:9-43
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:17:9-43
 	android:allowBackup
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:20:9-35
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:16:9-35
 	android:theme
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:23:9-40
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:19:9-40
 activity#com.nuvolect.countercloud.main.CloudMainActivity
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:24:9-32:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:20:9-28:20
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:26:13-41
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:22:13-41
 	android:launchMode
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:27:13-44
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:23:13-44
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:25:13-51
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:21:13-51
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:28:13-31:29
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:24:13-27:29
 action#android.intent.action.MAIN
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:29:17-69
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:25:17-69
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:29:25-66
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:25:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:30:17-77
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:26:17-77
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:30:27-74
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:26:27-74
 activity#com.nuvolect.countercloud.main.CloudManagerActivity
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:33:9-42:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:29:9-38:20
 	android:parentActivityName
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:38:13-65
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:34:13-65
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:35:13-42
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:31:13-42
 	android:launchMode
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:36:13-44
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:32:13-44
 	android:theme
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:37:10-41
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:33:10-41
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:34:13-54
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:30:13-54
 meta-data#android.support.PARENT_ACTIVITY
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:39:13-41:59
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:35:13-37:59
 	android:value
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:41:17-56
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:37:17-56
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:40:17-63
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:36:17-63
 provider#android.support.v4.content.FileProvider
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:43:9-51:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:39:9-47:20
 	android:grantUriPermissions
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:47:13-47
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:43:13-47
 	android:authorities
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:45:13-66
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:41:13-66
 	android:exported
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:46:13-37
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:42:13-37
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:44:13-67
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:40:13-67
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:48:13-50:56
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:44:13-46:56
 	android:resource
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:50:17-53
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:46:17-53
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:49:17-67
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:45:17-67
 activity#com.nuvolect.countercloud.main.EventLogActivity
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:52:9-59:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:48:9-55:20
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:54:13-44
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:50:13-44
 	android:launchMode
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:55:13-44
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:51:13-44
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:53:13-50
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:49:13-50
 activity#com.nuvolect.countercloud.main.SettingsActivity
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:60:9-67:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:56:9-63:20
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:62:13-50
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:58:13-50
 	android:theme
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:63:13-54
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:59:13-54
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:61:13-50
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:57:13-50
 activity#com.nuvolect.countercloud.survey.AppSurveyActivity
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:68:9-75:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:64:9-71:20
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:70:13-50
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:66:13-50
 	android:launchMode
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:71:13-44
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:67:13-44
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:69:13-53
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:65:13-53
 service#com.nuvolect.countercloud.main.WorkerService
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:77:9-84:19
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:73:9-80:19
 	android:parentActivityName
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:80:13-85
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:76:13-85
 	android:label
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:79:13-55
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:75:13-55
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:78:13-47
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:74:13-47
 receiver#com.nuvolect.countercloud.alarm.BootReceiver
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:85:9-90:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:81:9-86:20
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:85:19-53
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:81:19-53
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED+category:name:android.intent.category.HOME
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:86:13-89:29
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:82:13-85:29
 action#android.intent.action.BOOT_COMPLETED
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:87:17-79
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:83:17-79
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:87:25-76
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:83:25-76
 category#android.intent.category.HOME
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:88:17-73
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:84:17-73
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:88:27-70
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:84:27-70
 receiver#com.nuvolect.countercloud.alarm.HeartbeatAlarmReceiver
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:91:9-93:20
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:87:9-89:20
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:92:13-82
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:88:13-82
 provider#com.nuvolect.countercloud.data.DbProvider
-ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:94:9-98:40
+ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:90:9-94:40
 	android:enabled
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:97:13-35
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:93:13-35
 	android:authorities
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:96:13-60
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:92:13-60
 	android:exported
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:98:13-37
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:94:13-37
 	android:name
-		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:95:13-69
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml:91:13-69
+uses-sdk
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+MERGED from [com.android.support:support-v4:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-v4-28.0.0.aar/51cab849a1246e341a1a01244ea9e6c4/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-v4-28.0.0.aar/51cab849a1246e341a1a01244ea9e6c4/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-media-compat-28.0.0.aar/5f1aa0f6ff63a938dd45e1b273f90501/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-fragment-28.0.0.aar/851bdfe3fdb08645e429121238f9118b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-fragment-28.0.0.aar/851bdfe3fdb08645e429121238f9118b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-ui-28.0.0.aar/4b8e500fe9b7380c0a06ccca3ba6bc3b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-ui-28.0.0.aar/4b8e500fe9b7380c0a06ccca3ba6bc3b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-utils-28.0.0.aar/1c508396f5063d701071750bbefbed91/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-core-utils-28.0.0.aar/1c508396f5063d701071750bbefbed91/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/loader-28.0.0.aar/7f9084269625592d32180502e8392690/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/loader-28.0.0.aar/7f9084269625592d32180502e8392690/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewpager-28.0.0.aar/5e1df951cd9e026d2c5d21d5e5025fc2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewpager-28.0.0.aar/5e1df951cd9e026d2c5d21d5e5025fc2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/coordinatorlayout-28.0.0.aar/05c215ff90ff3349ed6e553d28420987/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/coordinatorlayout-28.0.0.aar/05c215ff90ff3349ed6e553d28420987/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/drawerlayout-28.0.0.aar/cc2dc477955a7eaa1d284f41ba71b840/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/drawerlayout-28.0.0.aar/cc2dc477955a7eaa1d284f41ba71b840/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/slidingpanelayout-28.0.0.aar/246475040b8733d08f301573ace0fc7e/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/slidingpanelayout-28.0.0.aar/246475040b8733d08f301573ace0fc7e/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/customview-28.0.0.aar/7ace5bb113e37c1d2422e2bcc6530a79/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/customview-28.0.0.aar/7ace5bb113e37c1d2422e2bcc6530a79/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/swiperefreshlayout-28.0.0.aar/19618aeaf93968200543263af8affbae/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/swiperefreshlayout-28.0.0.aar/19618aeaf93968200543263af8affbae/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/asynclayoutinflater-28.0.0.aar/1d0a5b63b6eaaa153c203ebae4b31f66/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/asynclayoutinflater-28.0.0.aar/1d0a5b63b6eaaa153c203ebae4b31f66/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/support-compat-28.0.0.aar/e54a42a279f2a8d290f77017b97356bd/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/versionedparcelable-28.0.0.aar/8bfcdf5d6cba5310582f939406c91a2e/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/versionedparcelable-28.0.0.aar/8bfcdf5d6cba5310582f939406c91a2e/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/59d6fe387d0a0dc22430a27fb8c3fcb1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/59d6fe387d0a0dc22430a27fb8c3fcb1/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/documentfile-28.0.0.aar/701e42eb1c4fc172f79bda3c0b61d998/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/documentfile-28.0.0.aar/701e42eb1c4fc172f79bda3c0b61d998/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/localbroadcastmanager-28.0.0.aar/0f7bcbf62126e55144eb03678660e6c6/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/localbroadcastmanager-28.0.0.aar/0f7bcbf62126e55144eb03678660e6c6/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/print-28.0.0.aar/be5e6630415bb1fbb3a166df96f8fd02/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/print-28.0.0.aar/be5e6630415bb1fbb3a166df96f8fd02/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/interpolator-28.0.0.aar/bd2eaf807adc4ee82780e69c64ab664a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/interpolator-28.0.0.aar/bd2eaf807adc4ee82780e69c64ab664a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/cursoradapter-28.0.0.aar/c227cc6c60708df05997fe15b73ee642/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/cursoradapter-28.0.0.aar/c227cc6c60708df05997fe15b73ee642/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.1.aar/1e5012e0a5618644ed0eb69a6475bcc0/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.1.aar/1e5012e0a5618644ed0eb69a6475bcc0/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/74915e071f3465c7b3dccf3c88d73030/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-1.1.1.aar/74915e071f3465c7b3dccf3c88d73030/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.1.aar/4dd74afba0a76c795a5ee615d547128d/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.1.aar/4dd74afba0a76c795a5ee615d547128d/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/793d7313f6463371a6b16e85720008e7/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/mattkraus/.gradle/caches/transforms-1/files-1.1/runtime-1.1.1.aar/793d7313f6463371a6b16e85720008e7/AndroidManifest.xml:20:5-44
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		ADDED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml
+		INJECTED from /Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/AndroidManifest.xml

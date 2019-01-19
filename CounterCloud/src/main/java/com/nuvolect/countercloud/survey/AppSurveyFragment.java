@@ -20,7 +20,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.PermissionUtil;
 
@@ -204,11 +203,6 @@ public class AppSurveyFragment extends Fragment {
                 public void onClick(View v) {
                     int index = (int) v.getTag();
                     PermissionUtil.showInstalledAppDetails(m_act, appItem.appPackageName);
-
-                    Analytics.send( m_act,
-                            Analytics.SURVEY_CLICK,
-                            appItem.appPackageName,
-                            Analytics.COUNT, 1);
                 }
             });
 

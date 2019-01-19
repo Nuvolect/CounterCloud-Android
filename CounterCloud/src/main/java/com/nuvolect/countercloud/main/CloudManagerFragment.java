@@ -33,7 +33,6 @@ import com.nuvolect.countercloud.data.CloudContacts;
 import com.nuvolect.countercloud.data.Persist;
 import com.nuvolect.countercloud.data.SecurityCheck;
 import com.nuvolect.countercloud.main.CloudManagerCursorAdapter.CloudManagerCaCallbacks;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.LogUtil.LogType;
 
@@ -246,10 +245,6 @@ public class CloudManagerFragment extends ListFragment {
 
             if(mSearchFirstTime){
 
-                Analytics.send( m_ctx,
-                        Analytics.MANAGER_CLICK,
-                        Analytics.SEARCH,
-                        Analytics.COUNT, 1L);
                 mSearchFirstTime = false;
             }
         }
@@ -302,11 +297,6 @@ public class CloudManagerFragment extends ListFragment {
             updateCursor();
             updateAdapter();
             mCallbacks.onRefreshFragment();
-
-            Analytics.send( m_ctx,
-                    Analytics.MANAGER,
-                    "items_deleted:"+mCloudManagerMode.toString(),
-                    Analytics.COUNT, itemsDeleted);
         }
     };
 
@@ -342,11 +332,6 @@ public class CloudManagerFragment extends ListFragment {
 
                 // Reset selection spinner
                 mSelectSpinner.setSelection(0, false);
-
-                Analytics.send( m_ctx,
-                        Analytics.MANAGER_CLICK,
-                        "mode_spinner:"+mCloudManagerMode,
-                        Analytics.COUNT, 1L);
             }
 
             @Override
@@ -396,11 +381,6 @@ public class CloudManagerFragment extends ListFragment {
                     default:
                         break;
                 }
-
-                Analytics.send( m_ctx,
-                        Analytics.MANAGER,
-                        "select_button:"+selectButton,
-                        Analytics.COUNT, 1L);
             }
 
             @Override

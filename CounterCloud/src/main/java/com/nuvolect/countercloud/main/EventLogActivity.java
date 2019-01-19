@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.data.DbProvider;
 import com.nuvolect.countercloud.license.AppSpecific;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.EmailUtil;
 import com.nuvolect.countercloud.util.LogUtil;
 
@@ -78,14 +77,12 @@ public class EventLogActivity extends FragmentActivity {
     public void onStart() {
         super.onStart();
 
-        Analytics.start(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Analytics.stop(this);
     }
 
     @Override
@@ -133,28 +130,14 @@ public class EventLogActivity extends FragmentActivity {
         case R.id.menu_delete_log:{
             DbProvider.deleteLogTable();
             m_act.recreate();
-
-            Analytics.send(getApplicationContext(),
-                    Analytics.EVENT_LOG,
-                    Analytics.DELETE_LOG,
-                    Analytics.COUNT, 1);
             break;
         }
         case R.id.menu_email_log:{
 
             EmailUtil.emailEventLog(m_act);
-            Analytics.send(getApplicationContext(),
-                    Analytics.EVENT_LOG,
-                    Analytics.EMAIL_LOG,
-                    Analytics.COUNT, 1);
             break;
         }
         case R.id.menu_settings:{
-
-            Analytics.send(getApplicationContext(),
-                    Analytics.EVENT_LOG,
-                    Analytics.SETTINGS,
-                    Analytics.COUNT, 1);
 
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
@@ -162,11 +145,6 @@ public class EventLogActivity extends FragmentActivity {
             break;
         }
         case R.id.menu_help:{
-
-            Analytics.send(getApplicationContext(),
-                    Analytics.EVENT_LOG,
-                    Analytics.HELP,
-                    Analytics.COUNT, 1);
 
             String url = AppSpecific.APP_HELP_URL;
             Intent i = new Intent(Intent.ACTION_VIEW);

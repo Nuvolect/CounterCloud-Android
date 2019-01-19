@@ -22,9 +22,6 @@ attr layout_insetEdge
 attr layout_keyline
 attr statusBarBackground
 attr ttcIndex
-bool ga_autoActivityTracking
-bool ga_logLevel
-bool ga_reportUncaughtExceptions
 color action_bar_background_highlight
 color black
 color blacktrans
@@ -123,6 +120,7 @@ drawable checkbox_selector
 drawable content_bg
 drawable ic_checkbox_checked
 drawable ic_checkbox_unchecked
+drawable ic_launcher_background
 drawable ic_menu_find
 drawable ic_menu_refresh
 drawable ic_menu_search
@@ -265,7 +263,6 @@ id title
 id titleCustomDialogTv
 id top
 integer cancel_button_image_alpha
-integer ga_dispatchPeriod
 integer status_bar_notification_info_maxnum
 layout app_survey_activity
 layout app_survey_fragment
@@ -304,6 +301,8 @@ menu cloud_manager_menu
 menu event_log_menu
 menu settings_menu
 mipmap ic_launcher
+mipmap ic_launcher_foreground
+mipmap ic_launcher_round
 raw app_survey_data
 raw tips
 string action_settings
@@ -320,7 +319,6 @@ string edit_contact_title
 string edit_title
 string email_address
 string first_name
-string ga_trackingId
 string home_address
 string last_name
 string loading

@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.license.Whitelist;
 import com.nuvolect.countercloud.survey.AppSurveyExec;
-import com.nuvolect.countercloud.util.Analytics;
 import com.nuvolect.countercloud.util.CustomDialog;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.LogUtil.LogType;
@@ -495,7 +494,7 @@ public class CloudMainFragment extends Fragment {
                         ContactsContract.RawContacts.CONTACT_ID, },
                 selection, null, null );
 
-        // Cursor should never be null, however analytics tells me it is sometimes null
+        // Cursor should never be null
         if( c == null){
             if( m_act != null)
                 Toast.makeText(m_act, "Error accessing cloud", Toast.LENGTH_SHORT).show();
@@ -525,7 +524,6 @@ public class CloudMainFragment extends Fragment {
 
         for( Map.Entry<String, Integer> account : m_rawContactsMap.entrySet()){
 
-            //TODO find a way to get more logical analytics, not just first account
             int count = getRawDataCount( account.getKey(), CloudManagerFragment.CloudManagerMode.RAW_DATA);
             m_rawDataMap.put(account.getKey(), count);
         }
@@ -580,15 +578,6 @@ public class CloudMainFragment extends Fragment {
                         null
                 );
 
-                // Don't clog the log
-//            if( Persist.oncePerDayRawContacts(m_ctx)){
-
-                //TODO find a way to get more logical analytics, not just first account
-                Analytics.send( m_ctx,
-                        Analytics.MAIN,
-                        Analytics.RAW_CONTACTS,
-                        Analytics.COUNT, cursor.getCount());
-//            }
                 break;
             }
             case RAW_DATA:{
@@ -610,14 +599,6 @@ public class CloudMainFragment extends Fragment {
                         null
                 );
 
-                // Don't clog the log
-//            if( Persist.oncePerDayRawData(m_ctx)){
-
-                Analytics.send( m_ctx,
-                        Analytics.MAIN,
-                        Analytics.RAW_DATA,
-                        Analytics.COUNT, cursor.getCount());
-//            }
                 break;
             }
             default:
@@ -645,7 +626,7 @@ public class CloudMainFragment extends Fragment {
 
             // Display results
             TextView tv = (TextView) m_rootView.findViewById(R.id.permissionSummaryTv);
-            tv.setText("Apps that can read your contacts: "+contactsAppsTotal);
+            tv.setText("Apps contacts permission: "+contactsAppsTotal);
         }
     }
 }

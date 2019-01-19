@@ -13,15 +13,27 @@ public class LogUtil {
     public enum LogType {
         NIL,
         ANALYTICS,
+        APP_SURVEY, 
+        APP_SURVEY_FRAGMENT, 
+        BETTER_CRYPTO, 
+        BOOT, 
         CLOUD_MAIN_ACTIVITY,
         CLOUD_MAIN_FRAGMENT,
         CLOUD_MANAGER_FRAGMENT,
         CRYPT,
         EVENT_LOG_FRAGMENT,
         EXPORT_EVENT_LOG,
+        HEARTBEAT,
         IN_APP_PAYMENT,
+        JSON, 
+        LICENSE_MANAGER, 
         LICENSE_UTIL,
-        WORKER, JSON, BETTER_CRYPTO, LICENSE_MANAGER, WHATS_NEW, UTIL, APP_SURVEY_FRAGMENT, SHOW_TIPS, APP_SURVEY, REST, WEB_SERVER, BOOT, HEARTBEAT,
+        REST, 
+        SHOW_TIPS, 
+        UTIL, 
+        WEB_SERVER, 
+        WHATS_NEW, 
+        WORKER, 
         }
 
     /**
@@ -42,15 +54,12 @@ public class LogUtil {
 
     /**
      * Put exception in Android Logcat.
-     * Inform google analytics.
      *
      * @param ctx
      * @param logType
      * @param e
      */
     public static void logException(Context ctx, LogType logType, Exception e) {
-
-        Analytics.send(ctx, "Exception", logType.toString(), e.getLocalizedMessage(), 1);
 
         logException( logType, e);
     }
