@@ -6,12 +6,12 @@
                 {
                     "source": "/Users/mattkraus/AndroidstudioProjects/CounterCloud/CounterCloud/src/main/res/values-v11/styles.xml",
                     "from": {
-                        "startLines": "6",
+                        "startLines": "13",
                         "startColumns": "4",
-                        "startOffsets": "177",
-                        "endLines": "8",
+                        "startOffsets": "468",
+                        "endLines": "15",
                         "endColumns": "12",
-                        "endOffsets": "316"
+                        "endOffsets": "607"
                     },
                     "to": {
                         "startLines": "2",
