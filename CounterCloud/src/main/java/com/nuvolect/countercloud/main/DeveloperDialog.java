@@ -14,16 +14,18 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.nuvolect.countercloud.data.DbProvider;
 import com.nuvolect.countercloud.data.Persist;
 import com.nuvolect.countercloud.license.LicensePersist;
 import com.nuvolect.countercloud.util.CustomDialog;
+import com.nuvolect.countercloud.util.DialogUtil;
 import com.nuvolect.countercloud.util.NotificationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manage a list of developer commands.  This dialog is only displayed for users on the whitelist.
+ * Manage a list of developer commands. This dialog is only displayed for users who enable it.
  */
 public class DeveloperDialog {
 
@@ -43,7 +45,6 @@ public class DeveloperDialog {
      * Developer menu: in menu order.  Replaces '_' with ' ' on menu.
      */
     public static enum DevMenu {
-        Temporary_disable_developer_menu,
         Decrement_app_version,
         Clear_data_close_app,
         Create_Notification,
@@ -65,6 +66,25 @@ public class DeveloperDialog {
         }
         final CharSequence[] items = stringMenu.toArray(new CharSequence[stringMenu.size()]);
 
+        final DialogUtil.DialogCallback deleteAllDialogCallback = new DialogUtil.DialogCallback() {
+            @Override
+            public void confirmed() { //TODO delete database
+
+                Toast.makeText(m_act, "got there", Toast.LENGTH_SHORT).show();
+
+                Persist.clearAll(m_act);
+                LicensePersist.clearAll(m_act);
+                DbProvider.deleteDatabase(m_act);
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_act);
+                pref.edit().clear().commit();
+                m_act.finish();
+            }
+
+            @Override
+            public void canceled() {
+            }
+        };
+
         AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
         builder.setTitle("Developer Menu")
                 .setItems( items, new DialogInterface.OnClickListener() {
@@ -74,26 +94,23 @@ public class DeveloperDialog {
 
                         switch( menuItem){
 
-                            case Temporary_disable_developer_menu:
-                                m_developerIsEnabled = false;
-                                m_act.invalidateOptionsMenu();
-                                break;
                             case Decrement_app_version:{
 
-                                int appVersion = LicensePersist.getAppVersion(m_act);
+                                int appVersion = Persist.getAppVersion(m_act);
                                 if( --appVersion < 1)
                                     appVersion = 1;
-                                LicensePersist.setAppVersion(m_act, appVersion);
+                                Persist.setAppVersion(m_act, appVersion);
                                 Toast.makeText(m_act, "App version: " + appVersion, Toast.LENGTH_LONG).show();
                                 break;
                             }
                             case Clear_data_close_app:{
 
-                                Persist.clearAll(m_act);
-                                LicensePersist.clearAll(m_act);
-                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_act);
-                                pref.edit().clear().commit();
-                                m_act.finish();
+                                DialogUtil.confirmDialog(
+                                        m_act,
+                                        "Your attention please",
+                                        "Delete ALL app data?",
+                                        "Cancel",
+                                        "Yes, delete ALL", deleteAllDialogCallback);
                                 break;
                             }
                             case Create_Notification:{

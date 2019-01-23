@@ -37,9 +37,6 @@ public class CloudManagerActivity extends FragmentActivity
         m_act = this;
         m_ctx = getApplicationContext();
 
-        // Action bar progress setup.  Needs to be called before setting the content view
-//        m_act.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         setContentView(R.layout.cloud_manager_activity);
 
         // Show the Up button in the action bar.

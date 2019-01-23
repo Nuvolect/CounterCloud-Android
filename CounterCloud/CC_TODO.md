@@ -1,7 +1,0 @@
-
-o Publish update with refined app survey layout that does not clip text (change to LL margin)
-
-Search "anonymous metadata" to find app permisson publishing code
-
-
-o Complete items on //FIXME todo list

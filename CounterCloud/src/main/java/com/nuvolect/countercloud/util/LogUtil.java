@@ -19,8 +19,7 @@ public class LogUtil {
     public static final boolean VERBOSE = DEBUG;
     public enum LogType {
         NIL,
-        ANALYTICS,
-        APP_SURVEY, 
+        APP_SURVEY,
         APP_SURVEY_FRAGMENT, 
         BETTER_CRYPTO, 
         BOOT, 
@@ -30,7 +29,6 @@ public class LogUtil {
         CRYPT,
         EVENT_LOG_FRAGMENT,
         EXPORT_EVENT_LOG,
-        HEARTBEAT,
         IN_APP_PAYMENT,
         JSON, 
         LICENSE_MANAGER, 

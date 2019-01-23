@@ -21,7 +21,7 @@ import com.nuvolect.countercloud.util.LogUtil;
 
 public class SecurityCheck {
 
-    public static String[] search_list = {
+    public static String[] search_list = {//TODO expand securityCheck search items
         "account",
         "best friend",
         "city born",

@@ -11,7 +11,6 @@ import android.net.Uri;
 
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.main.CConst;
-import com.nuvolect.countercloud.util.BetterCrypto;
 
 /**
  * Details of the license specific to this app. Keep separate from other license classes
@@ -23,37 +22,8 @@ public class AppSpecific {
 
     public static final String APP_SIMPLE_CRYPTO_CRYP_SEED= "#4!YrErd2#AvXOcL51SS";//FIXME obscure cryp key
     public static final String APP_CRYP_SEED_HEX          = "4f516651137db395a95151886f027fd8";//FIXME obscure cryp key
-    public static final String EARLY_ADOPTER_CRYP         = "pzdvsnaxqeafuvjdtqpj";
-    public static final String EARLY_ADOPTER_CRYP_HEX     = "16ba96b4e2fa961e2620c81e945309ac";
-
     public final static int SMALL_ICON = R.drawable.cc_small_icon;// 96 x 96
-    public final static String GOOGLE_PLAY_HREF_URL       = CConst.CC_GOOGLE_PLAY_HREF_URL;
     public final static String TOC_HREF_URL               = CConst.CC_TOC_HREF_URL;
     public final static String PP_HREF_URL                = CConst.CC_PP_HREF_URL;
-
-    public final static String APP_GOOGLE_PLAY_URL        = "https://play.google.com/store/apps/details?id=com.nuvolect.countercloud";
-    public static final String APP_TERMS_URL              = "https://nuvolect.com/countercloud_terms/";
-    public static final String APP_INFO_URL               = "https://nuvolect.com/countercloud/";
     public static final String APP_HELP_URL               = "https://nuvolect.com/countercloud_help/";
-    public static final String APP_PRIVACY_URL            = "https://nuvolect.com/privacy/";
-    public final static Uri APP_GOOGLE_PLAY_URI           = Uri.parse("market://details?id=com.nuvolect.countercloud");
-
-    public static final String WHATS_NET_NAG_KEY          = "whats_new_nag";
-    public static final long WHATS_NEW_NAG_PERIOD         =         7 * 24 * 60 * 60 * 1000L;// 7 days between nags
-
-    private static String cryptoPublicKey=//FIXME obscure cryp key
-            "/PgXQrTTQmxm+kk7vCEEWdKrktV5bM7gpsjL9NvNerK+rpIJxosTJHhf5uExo24zgdn4vaRFV6q+" +
-            "zNw9FOCbWC5O+dqYyDnyUrM8NGvMLjtOXJKQrOm8gpJYscMzd8qyIoXjpYxZcJKaymwEZS4jqceD" +
-            "l6qoNT3f2oAQ8M2m+igXJpHR3vz++g0aqRDGIHEbY950GGatQbYsmyj8wDcr96JVtGGCDzH6v8IL" +
-            "Zd1+wtOgB/f6NaK8ZsTq9xOBMpv3STc8nrGVto3SQ7EQDUU2ombE05+jKciP2altTc8CEG/gypq+" +
-            "fpaf27tvTHcfV31sscEUTWrO45yGANlvRXJ1NKSBbRgrFhFw4c5a5l8l9TCWfcwo+MWi9uLsJ/Z7" +
-            "LGNCZD21dUrgxyz8n7UZpC0AoMZxX3btuuzYdQ5R2JilVvkdKTzkrAtGfubC8QlN9iJAevBveC38" +
-            "nUU9XdZxMjpMMAkEYLYCnxE+gtmF/4j7wTFh/fmc8QKyU01DdIdN0QBar09Js4Dvea9g61DyhkcC" +
-            "OWkDYzpUv5u9a9np79tWAgc=";
-
-    /** Return a clear copy of the public key */
-    public static String getClearPublicKey() throws Exception{
-
-        return BetterCrypto.decrypt(APP_CRYP_SEED_HEX, cryptoPublicKey);
-    }
 }

@@ -85,14 +85,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.CloudMainActivity" />
         </service>
-        <receiver android:name=".alarm.BootReceiver" >
+        <receiver android:name=".main.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.nuvolect.countercloud.alarm.HeartbeatAlarmReceiver" >
         </receiver>
         <provider
             android:name="com.nuvolect.countercloud.data.DbProvider"

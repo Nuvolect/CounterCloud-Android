@@ -78,7 +78,6 @@ public class CloudMainActivity extends FragmentActivity
                 case REJECTED_TERMS:
                     m_act.finish();
                     break;
-                case WHITELIST_USER:
                 case PREMIUM_USER:
                     if(PermissionUtil.canAccessReadContacts(m_act))
                         startGui();

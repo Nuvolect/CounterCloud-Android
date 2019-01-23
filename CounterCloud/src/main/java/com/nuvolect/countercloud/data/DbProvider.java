@@ -40,7 +40,7 @@ public class DbProvider extends ContentProvider{
     private static final String TAG = "DbProvider";
     static DatabaseHelper mOpenHelper ;
 
-    private static final String DATABASE_NAME = "blue.db";
+    private static final String DATABASE_NAME = "app.db";
     private static final int DATABASE_VERSION = 2;
     private static final String RAW_CONTACT_TABLE   = "raw_contact";
     private static final String EVENT_LOG_TABLE     = "event_log";
@@ -133,7 +133,7 @@ public class DbProvider extends ContentProvider{
     public static int getRawContactCount() {
 
         int rows=0;
-        //TODO figure out if NOT NULL is better than <> '', are both required?
+
         String selection = RCTab.display_name+" NOT NULL";
         try {
             SQLiteDatabase db = mOpenHelper.getWritableDatabase();

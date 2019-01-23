@@ -18,33 +18,11 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-//TODO create class description
-//
+/**
+ * Support user permission decisions.
+ */
 public class PermissionUtil {
 
-    public final static int ACCESS_FINE_LOCATION   = 1;
-    public final static int ACCESS_COARSE_LOCATION = 2;
-    public final static int READ_CONTACTS          = 3;
-    public final static int READ_EXTERNAL_STORAGE  = 4;
-    public final static int WRITE_EXTERNAL_STORAGE = 5;
-    public final static int READ_PHONE_STATE       = 6;
-    public final static int READ_PHONE_STATE_READ_CONTACTS = 7;
-
-    public static boolean canAccessAnyLocation(Context ctx){
-
-        return canAccessFineLocation(ctx) || canAccessCoarseLocation(ctx);
-    }
-
-    public static boolean canAccessFineLocation(Context ctx){
-
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-    public static boolean canAccessCoarseLocation(Context ctx){
-
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
     public static boolean canAccessReadContacts(Context ctx){
 
         return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_CONTACTS)
@@ -80,76 +58,11 @@ public class PermissionUtil {
                     responseId);
         }
     }
-    public static boolean canReadExternalStorage(Context ctx) {
-
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-    public static void requestReadExternalStorage(Activity act, int responseId){
-
-        if (Build.VERSION.SDK_INT >= 23) {
-
-            act.requestPermissions(
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, responseId);
-        }else{
-
-            ActivityCompat.requestPermissions(act,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, responseId);
-        }
-    }
-    public static boolean canWriteExternalStorage(Context ctx) {
-
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-    public static void requestWriteExternalStorage(Activity act, int responseId){
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            act.requestPermissions(
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, responseId);
-        }else{
-            ActivityCompat.requestPermissions(act,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, responseId);
-        }
-    }
-
-    public static boolean canReadWriteExternalStorage(Activity act) {
-
-        return canReadExternalStorage(act) && canWriteExternalStorage(act);
-    }
-    public static void requestReadWriteExternalStorage(Activity act, int responseId){
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            act.requestPermissions(
-                    new String[]{
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                    }, responseId);
-        }else{
-            ActivityCompat.requestPermissions(act,
-                    new String[]{
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                    }, responseId);
-        }
-    }
-
-
-    public static boolean canAccessPhoneState(Context ctx) {
-
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
 
     private static final String SCHEME = "package";
-
     private static final String APP_PKG_NAME_21 = "com.android.settings.ApplicationPkgName";
-
     private static final String APP_PKG_NAME_22 = "pkg";
-
     private static final String APP_DETAILS_PACKAGE_NAME = "com.android.settings";
-
     private static final String APP_DETAILS_CLASS_NAME = "com.android.settings.InstalledAppDetails";
 
     public static void showInstalledAppDetails(Context context, String packageName) {

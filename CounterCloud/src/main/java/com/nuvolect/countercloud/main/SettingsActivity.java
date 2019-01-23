@@ -167,33 +167,13 @@ public class SettingsActivity extends PreferenceActivity
 
         return dialog_setting;
     }
-    public static boolean notifyInsertSetting(Context ctx){
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        boolean setting = sharedPref.getBoolean(NOTIFY_INSERT_SETTING, true);
-
-        return setting;
-    }
-    public static boolean notifyUpdateSetting(Context ctx){
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        boolean setting = sharedPref.getBoolean(NOTIFY_UPDATE_SETTING, true);
-
-        return setting;
-    }
-    public static boolean notifyDeleteSetting(Context ctx){
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        boolean setting = sharedPref.getBoolean(NOTIFY_DELETE_SETTING, true);
-
-        return setting;
-    }
 
     public static void setShowTips(Context ctx, boolean checked) {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
         sharedPref.edit().putBoolean(CConst.SHOW_TIPS, checked).apply();
     }
+
     public static boolean getShowTips(Context ctx) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
         return sharedPref.getBoolean(CConst.SHOW_TIPS, true);

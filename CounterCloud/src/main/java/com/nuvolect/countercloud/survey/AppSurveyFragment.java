@@ -37,8 +37,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-//TODO create class description
-//
+/**
+ * Survey apps running on the device that can read and write contacts.
+ */
 public class AppSurveyFragment extends Fragment {
 
     private static final boolean VERBOSE = LogUtil.VERBOSE;
@@ -49,9 +50,7 @@ public class AppSurveyFragment extends Fragment {
     private LayoutInflater m_inflater;
     private ViewGroup m_container;
 
-    private AsyncTask<Void, Void, Void> m_queryAppsAsyncTask;
     private ArrayList<AppItem> m_appItems;
-    private JSONObject m_appObj;
     private float iconSizeDp = 50;
 
     /**
@@ -72,7 +71,7 @@ public class AppSurveyFragment extends Fragment {
         /**
          * Load known custom and google packages from raw resources into a JSON object
          */
-        m_appObj = AppSurveyExec.getAppDb(m_act);
+        AppSurveyExec.getAppDb(m_act);//SPRINT delete
     }
 
     @Override
@@ -80,7 +79,7 @@ public class AppSurveyFragment extends Fragment {
         super.onResume();
         LogUtil.log( LogUtil.LogType.APP_SURVEY_FRAGMENT, "onResume()");
 
-        m_queryAppsAsyncTask = new QueryAppsAsync().execute();
+        new QueryAppsAsync().execute();
     }
 
     @Override
@@ -92,11 +91,6 @@ public class AppSurveyFragment extends Fragment {
         m_rootView = inflater.inflate(R.layout.app_survey_fragment, container, false);
 
         return m_rootView;
-    }
-
-    public void refreshSurvey() {
-
-        m_queryAppsAsyncTask = new QueryAppsAsync().execute();
     }
 
     private class QueryAppsAsync extends AsyncTask<Void, Void, Void>
@@ -120,13 +114,6 @@ public class AppSurveyFragment extends Fragment {
 
     /**
      * Generate a survey or update the survey for all contacts apps of a single device.
-     * Each app survey publish event is timestamped. Timestamps are checked and updated when the
-     * survey results are published. Survey results for an app cannot be published more than one
-     * time in 7 days. This way a snapshot of apps can be taken at any time without being heavily
-     * influenced by users that frequently run the app.
-     * A check is made on the local database of packages that in the future //TODO use package database to inform user
-     * will show safe apps and unknown apps.
-     * @param ctx
      */
     private void generateAppSurvey() {
 
@@ -179,10 +166,6 @@ public class AppSurveyFragment extends Fragment {
 
         // Sort on App Name
         m_appItems = sortApps(m_appItems);
-
-        // Generate survey, this also happens on each boot cycle
-// Disable anonymous metadata collection
-//        WorkerCommand.publishAppSurvey(m_ctx);
     }
 
     // On the UI thread, build the view

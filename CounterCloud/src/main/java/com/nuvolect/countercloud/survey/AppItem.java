@@ -9,8 +9,9 @@ package com.nuvolect.countercloud.survey;//
 
 import android.graphics.drawable.Drawable;
 
-//TODO create class description
-//
+/**
+ * Object to keep details of a specific app.
+ */
 public class AppItem {
 
     public boolean appWritePriv;

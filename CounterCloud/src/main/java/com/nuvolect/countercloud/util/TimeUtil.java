@@ -21,19 +21,19 @@ public class TimeUtil {
 	 * @param time
 	 * @return string
 	 */
-	static public String friendlyTimeString(long t){
+	static public String friendlyTimeString(long time){
 
 		simpleFormat.setTimeZone(TimeZone.getDefault());
-		return simpleFormat.format( t);
+		return simpleFormat.format( time);
 	}
 
 	/**
 	 * Return time in the ISO 8601 time standard as a string
 	 * @return string
 	 */
-	static public String isoTimeString(long t){
+	static public String isoTimeString(long time){
 
 		sdfIso.setTimeZone(TimeZone.getDefault());
-		return sdfIso.format( t);
+		return sdfIso.format( time);
 	}
 }

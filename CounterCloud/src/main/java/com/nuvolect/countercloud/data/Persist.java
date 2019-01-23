@@ -17,12 +17,10 @@ public class Persist {
     private static final String PERSIST_NAME           = "cc_persist";
 
     // Persist keys
-    private static final String ACCOUNT_MD5            = "account_md5";
-    private static final String ACCOUNT_NAME           = "account_name";
-	private static final String TIME_LAST_UPDATE       = "time_last_update";
-    private static final String CLOUD_MGR_MODE         = "cloud_mgr_mode";
+    private static final String APP_VERSION            = "app_version";
+	private static final String CLOUD_MGR_MODE         = "cloud_mgr_mode";
     private static final String SHOW_TIP_CURRENT       = "show_tip_current";
-    private static final String HEARTBEAT_TIME         = "heartbeat_time";
+    private static final String TIME_LAST_UPDATE       = "time_last_update";
 
     /**
      * Remove all persistent data.
@@ -55,24 +53,14 @@ public class Persist {
         pref.edit().putString(key, value).commit();
     }
 
-    //FUTURE save all Persist data into the encrypted sql database. i.e., all data is encrypted
-
-    public static void setAccountName(Context ctx, String accountName){
+    public static void setAppVersion(Context ctx, int appVersion) {
         final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
-        pref.edit().putString(ACCOUNT_NAME, accountName).commit();
-    }
-    public static String getAccountName(Context ctx) {
-        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
-        return pref.getString(ACCOUNT_NAME, "");
+        pref.edit().putInt(APP_VERSION, appVersion).commit();
     }
 
-    public static void setAccountMd5(Context ctx, String md5) {
-        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
-        pref.edit().putString(ACCOUNT_MD5, md5).commit();
-    }
-    public static String getAccountMd5(Context ctx) {
+    public static int getAppVersion(Context ctx) {
         final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
-        return pref.getString(ACCOUNT_MD5, "");
+        return pref.getInt(APP_VERSION, 0);
     }
 
     public static void setTimeLastUpdate(Context ctx, Long time) {
@@ -109,16 +97,5 @@ public class Persist {
         final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
         return pref.getInt(SHOW_TIP_CURRENT, -1);
     }
-
-    public static long getLastHeartbeatTime(Context ctx) {
-        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
-        return pref.getLong( HEARTBEAT_TIME, 0L);
-    }
-
-    public static void setHeartbeatTime(Context ctx, long heartbeatTime) {
-        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
-        pref.edit().putLong( HEARTBEAT_TIME, heartbeatTime).commit();
-    }
-
 }
 

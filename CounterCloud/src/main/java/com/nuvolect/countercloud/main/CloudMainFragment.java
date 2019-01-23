@@ -33,7 +33,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.license.Whitelist;
 import com.nuvolect.countercloud.survey.AppSurveyExec;
 import com.nuvolect.countercloud.util.CustomDialog;
 import com.nuvolect.countercloud.util.LogUtil;
@@ -50,8 +49,7 @@ import java.util.regex.Pattern;
 /**
  * A list fragment representing a list of People. This fragment also supports
  * tablet devices by allowing list items to be given an 'activated' state upon
- * selection. This helps indicate which item is currently being viewed in a
- * {@link ContactDetailFragment}.
+ * selection. This helps indicate which item is currently being viewed.
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
@@ -297,8 +295,6 @@ public class CloudMainFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if( ! Whitelist.onWhitelist(m_ctx).isEmpty())
-                    DeveloperDialog.start(m_act);
             }
         });
         row.addView(headingTv);
@@ -474,10 +470,10 @@ public class CloudMainFragment extends Fragment {
         Account[] myAccounts = AccountManager.get(m_act).getAccounts();
 
             /* We only want "com.google" accounts, example next line
-             * myAccount.type == com.google, name == matt.kraus@nuvolect.com
-             * myAccount.type == com.linkedin.android, name == mr.matt.kraus@gmail.com
-             * myAccount.type == com.google.android.legacyimap, name == mattkraus@yahoo.com
-             * myAccount.type == com.dropbox.android.account, name == matt.kraus@nuvolect.com
+             * myAccount.type == com.google, name == mr.user@gmail.com
+             * myAccount.type == com.linkedin.android, name == joe.user@gmail.com
+             * myAccount.type == com.google.android.legacyimap, name == joeuser@yahoo.com
+             * myAccount.type == com.dropbox.android.account, name == joe.user@gmail.com
              */
 
         for (Account myAccount : myAccounts) {

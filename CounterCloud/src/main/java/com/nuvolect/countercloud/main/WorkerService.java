@@ -52,7 +52,6 @@ public class WorkerService extends Service {
         INTERRUPT_PROCESSING_AND_STOP,
         NOTIFY_LOG_UPDATE,
         PROCESS_CLOUD_UPDATES,
-        PUBLISH_APP_SURVEY,
         REGISTER_CLOUD_OBSERVER,
         UNREGISTER_CLOUD_OBSERVER,
     }
@@ -171,7 +170,6 @@ public class WorkerService extends Service {
                     case NOTIFY_LOG_UPDATE:
                     case CLONE_CLOUD_DB:
                     case PROCESS_CLOUD_UPDATES:
-                    case PUBLISH_APP_SURVEY:
                     case UNREGISTER_CLOUD_OBSERVER:
                     case REGISTER_CLOUD_OBSERVER:
                         msg.setData(bundle);
@@ -254,10 +252,6 @@ public class WorkerService extends Service {
                     notifyList( cloudUpdate.m_changeList );
 
                     if(DEBUG)LogUtil.log("ContactMonitorService, update: "+cloudUpdate.m_changeList.toString());
-                    break;
-                }
-                case PUBLISH_APP_SURVEY:{
-                    AppSurveyExec.publishAppSurvey(m_ctx);
                     break;
                 }
                 // Just pass the command along to any registered listeners

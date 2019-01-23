@@ -37,10 +37,4 @@ public class WorkerCommand {
         i.putExtra("command",WorkerService.Command.NOTIFY_LOG_UPDATE.ordinal());
         ctx.startService( i );
     }
-	public static void publishAppSurvey(Context ctx) {
-
-        Intent i = new Intent( ctx, WorkerService.class);
-        i.putExtra("command",WorkerService.Command.PUBLISH_APP_SURVEY.ordinal());
-        ctx.startService( i );
-	}
 }

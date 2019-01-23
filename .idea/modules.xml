@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CounterCloud.iml" filepath="$PROJECT_DIR$/CounterCloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CounterCloud/CounterCloud-CounterCloud.iml" filepath="$PROJECT_DIR$/CounterCloud/CounterCloud-CounterCloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CounterCloud/CounterCloud.iml" filepath="$PROJECT_DIR$/CounterCloud/CounterCloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CounterCloud-android.iml" filepath="$PROJECT_DIR$/CounterCloud-android.iml" />
     </modules>
   </component>
 </project>

@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
 
+import com.nuvolect.countercloud.data.Persist;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -72,11 +74,11 @@ public class LicenseUtil {
             e.printStackTrace();
         }
 
-        int previousAppVersion = LicensePersist.getAppVersion( ctx);
+        int previousAppVersion = Persist.getAppVersion( ctx);
 
         if( appVersion > previousAppVersion) {
 
-            LicensePersist.setAppVersion( ctx, appVersion);
+            Persist.setAppVersion( ctx, appVersion);
 
             if (previousAppVersion > 0)
                 return true;  // App is upgraded and not a new install

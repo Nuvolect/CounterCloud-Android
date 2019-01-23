@@ -81,8 +81,22 @@ public class SettingsFragment extends PreferenceFragment
         TextView appVersionTv = (TextView) m_rootView.findViewById(R.id.settings_app_version);
         appVersionTv.setText("CounterCloud version " + version);
 
+        appVersionTv.setOnClickListener( versionTextonClickListener );
+
         return m_rootView;
     }
+
+    int userClicks = 0;
+    View.OnClickListener versionTextonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            if( ++userClicks >= 3){
+
+                DeveloperDialog.start( m_act);
+            }
+        }
+    };
 
     @Override
     public void onResume() {
