@@ -30,8 +30,6 @@ import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.PermissionUtil;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,11 +65,6 @@ public class AppSurveyFragment extends Fragment {
 
         m_act = getActivity();
         m_ctx = m_act.getApplicationContext();
-
-        /**
-         * Load known custom and google packages from raw resources into a JSON object
-         */
-        AppSurveyExec.getAppDb(m_act);//SPRINT delete
     }
 
     @Override

@@ -7,7 +7,8 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nuvolect.countercloud"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.nuvolect.countercloud"
     >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORaK_STATE" />
@@ -43,15 +44,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.CloudMainActivity" />
         </activity>
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.nuvolect.countercloud.files"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/fileprovider" />
-        </provider>
         <activity
             android:name=".main.EventLogActivity"
             android:label="Cloud Event Log"
@@ -76,6 +68,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.CloudMainActivity" />
         </activity>
+        <!-- 
+        When you switch Build Varients between 'debug' and 'release', you also need to Sync Project with Gradle Files. 
+        It was not enough to just Clean and Rebuild project.
+        
+        In Android Studio there are two tabs in the bottom of the AndroidManifest.xml page. 
+        The 'Text' tab you use to edit and the 'Merged Manifest' tab shows the resulting manifest after the build.
+        Use it to confirm that the applicationId is properly injected into the android:authorities section of the provider.
+        -->
+        <provider
+            tools:replace="android:authorities"
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider" />
+        </provider>
+        <provider
+            android:name="com.nuvolect.countercloud.data.DbProvider"
+            android:authorities="${applicationId}.db"
+            android:enabled="true"
+            android:exported="false" />
 
         <service
             android:name=".main.WorkerService"
@@ -91,11 +106,6 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-        <provider
-            android:name="com.nuvolect.countercloud.data.DbProvider"
-            android:authorities="com.nuvolect.countercloud"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>

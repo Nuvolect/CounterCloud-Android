@@ -9,7 +9,6 @@ package com.nuvolect.countercloud.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -109,16 +108,5 @@ public class Util {
      */
     public static void unlockScreenOrientation(Activity act) {
         act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
-
-    /**
-     * Restart the entire application
-     * @param act
-     */
-    public static void restartApplication(Activity act){
-        Intent i = act.getBaseContext().getPackageManager()
-                .getLaunchIntentForPackage( act.getBaseContext().getPackageName() );
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        act.startActivity(i);
     }
 }

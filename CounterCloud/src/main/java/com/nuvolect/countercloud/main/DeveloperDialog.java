@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -50,10 +51,9 @@ public class DeveloperDialog {
         Create_Notification,
         Test_RateThisApp,
         Test_MakeDonation,
-        Test_MakeModel,
     };
 
-    public static void start(Activity act) {
+    public static void start(final Activity act) {
 
         m_act = act;
 
@@ -77,7 +77,13 @@ public class DeveloperDialog {
                 DbProvider.deleteDatabase(m_act);
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(m_act);
                 pref.edit().clear().commit();
-                m_act.finish();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    act.finishAffinity();
+                } else{
+                    act.finish();
+                    System.exit( 0 );
+                }
             }
 
             @Override
@@ -116,7 +122,7 @@ public class DeveloperDialog {
                             case Create_Notification:{
 
                                 ++notifNum;
-                                NotificationUtil.pushNotification(m_act,
+                                NotificationUtil.pushNotification( m_act,
                                         "Title part: " + notifNum, "Small text part: " + notifNum);
                                 break;
                             }

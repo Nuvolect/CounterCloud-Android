@@ -15,7 +15,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
-import com.nuvolect.countercloud.util.LogUtil;
+import com.nuvolect.countercloud.main.CConst;
 
 
 /**
@@ -88,14 +88,14 @@ public class LicenseManager {
 
         }else{
 
-            String message = "By using this application you agree to "+AppSpecific.TOC_HREF_URL
-                    +" and "+AppSpecific.PP_HREF_URL;
+            String message = "By using this application you agree to "+CConst.CC_TOC_HREF_URL
+                    +" and "+CConst.CC_PP_HREF_URL;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(m_act);
             builder.setTitle("Please confirm Terms and Conditions and Privacy Policy");
             builder.setMessage( Html.fromHtml(message));
             builder.setCancelable(false);
-            builder.setIcon(AppSpecific.SMALL_ICON);
+            builder.setIcon(CConst.SMALL_ICON);
 
             builder.setPositiveButton("I Agree", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int labelIndex) {

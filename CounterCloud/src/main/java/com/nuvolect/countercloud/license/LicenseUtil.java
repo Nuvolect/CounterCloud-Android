@@ -9,53 +9,10 @@ package com.nuvolect.countercloud.license;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
 
 import com.nuvolect.countercloud.data.Persist;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class LicenseUtil {
-
-	/**
-	 * Return a unique string for the device.  This string only changes when you wipe the device
-	 * and reinstall Android.
-	 * @param context
-	 * @return unique device ID string
-	 */
-	public static String getUniqueInstallId(Context context) {
-
-		String deviceId = Settings.Secure.getString( context.getContentResolver(), Settings.Secure.ANDROID_ID);
-		return deviceId;
-	}
-
-    /**
-     * Generate a 32 character length hex md5 string from plain source text.
-     * @param plaintext
-     * @return
-     */
-    public static String md5(String plaintext){
-
-        MessageDigest m;
-        try {
-            m = MessageDigest.getInstance("MD5");
-            m.reset();
-            m.update(plaintext.getBytes());
-            byte[] digest = m.digest();
-            BigInteger bigInt = new BigInteger(1,digest);
-            String hashtext = bigInt.toString(16);
-            // Now we need to zero pad it if you actually want the full 32 chars.
-            while(hashtext.length() < 32 ){
-                hashtext = "0"+hashtext;
-            }
-            return hashtext;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     /**
      * Detect if the app has been upgraded.

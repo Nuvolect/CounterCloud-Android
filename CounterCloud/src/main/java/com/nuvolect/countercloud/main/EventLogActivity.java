@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.data.DbProvider;
-import com.nuvolect.countercloud.license.AppSpecific;
 import com.nuvolect.countercloud.util.EmailUtil;
 import com.nuvolect.countercloud.util.LogUtil;
 
@@ -153,7 +152,7 @@ public class EventLogActivity extends FragmentActivity {
         }
         case R.id.menu_help:{
 
-            String url = AppSpecific.APP_HELP_URL;
+            String url = CConst.APP_HELP_URL;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);

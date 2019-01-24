@@ -30,29 +30,6 @@ public class Persist {
         pref.edit().clear().commit();
     }
 
-    /**
-     * Simple get.  Return empty string if not found
-     * @param ctx
-     * @param key
-     * @return
-     */
-    public static String get(Context ctx, String key) {
-
-        final SharedPreferences pref = ctx.getSharedPreferences( PERSIST_NAME, Context.MODE_PRIVATE);
-        return pref.getString(key, "");
-    }
-
-    /**
-     * Simple put value with the given key.
-     * @param ctx
-     * @param key
-     * @param value
-     */
-    public static void put(Context ctx, String key, String value){
-        final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
-        pref.edit().putString(key, value).commit();
-    }
-
     public static void setAppVersion(Context ctx, int appVersion) {
         final SharedPreferences pref = ctx.getSharedPreferences(PERSIST_NAME,  Context.MODE_PRIVATE);
         pref.edit().putInt(APP_VERSION, appVersion).commit();

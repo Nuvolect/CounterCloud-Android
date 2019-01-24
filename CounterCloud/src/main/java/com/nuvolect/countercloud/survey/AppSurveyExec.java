@@ -12,15 +12,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -57,51 +48,5 @@ public class AppSurveyExec {
             }
         }
         return appsAccessingContacts;
-    }
-
-    /**
-     * Read the app database and return it as a JSON object.
-     * @param ctx
-     * @return
-     */
-    public static JSONObject getAppDb(Context ctx){
-
-        /**
-         * Load packages from raw resources into a JSON object
-         */
-        String fileContents = "";
-        StringBuilder sb = new StringBuilder();
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            InputStream is = ctx.getResources().openRawResource(R.raw.app_survey_data);
-
-            byte[] buffer = new byte[4096];
-            int len;
-            while ((len = is.read(buffer)) > 0) {
-
-                String s = new String( buffer, 0, len, "UTF-8");
-                sb.append( s );
-            }
-            fileContents = sb.toString();
-
-            if( is != null)
-                is.close();
-        } catch (FileNotFoundException e) {
-            LogUtil.logException(LogUtil.LogType.APP_SURVEY, e);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /**
-         * Build the JSON array
-         */
-        try {
-
-            jsonObject= new JSONObject( fileContents );
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
     }
 }

@@ -20,7 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.license.AppSpecific;
 
 public class CloudManagerActivity extends FragmentActivity
         implements CloudManagerFragment.Callbacks {
@@ -104,7 +103,7 @@ public class CloudManagerActivity extends FragmentActivity
             }
             case R.id.menu_help:{
 
-                String url = AppSpecific.APP_HELP_URL;
+                String url = CConst.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);

@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.data.Persist;
-import com.nuvolect.countercloud.license.AppSpecific;
 import com.nuvolect.countercloud.license.LicenseManager;
 import com.nuvolect.countercloud.license.LicensePersist;
 import com.nuvolect.countercloud.license.LicenseUtil;
@@ -91,7 +90,6 @@ public class CloudMainActivity extends FragmentActivity
                                     @Override
                                     public void confirmed() {
                                         PermissionUtil.requestReadWriteContacts(m_act, REQUEST_ID_READ_CONTACTS);
-//                                        startGui();
                                     }
                                     @Override
                                     public void canceled() {
@@ -239,7 +237,7 @@ public class CloudMainActivity extends FragmentActivity
             }
             case R.id.menu_help:{
 
-                String url = AppSpecific.APP_HELP_URL;
+                String url = CConst.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);
@@ -275,7 +273,7 @@ public class CloudMainActivity extends FragmentActivity
         startActivity(intent);
     }
     /**
-     * Callback method from {@link ContactListFragment.Callbacks} indicating that
+     * Callback method from {@link CloudMainFragment} indicating that
      * data has changed and the fragment should be refreshed
      */
     @Override

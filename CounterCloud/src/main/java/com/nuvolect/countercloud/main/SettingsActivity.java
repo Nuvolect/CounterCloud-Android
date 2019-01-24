@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.nuvolect.countercloud.R;
-import com.nuvolect.countercloud.license.AppSpecific;
 import com.nuvolect.countercloud.util.ActionBarUtil;
 import com.nuvolect.countercloud.util.LogUtil;
 import com.nuvolect.countercloud.util.PermissionManager;
@@ -113,7 +112,7 @@ public class SettingsActivity extends PreferenceActivity
                 break;
             }
             case R.id.menu_help:{
-                String url = AppSpecific.APP_HELP_URL;
+                String url = CConst.APP_HELP_URL;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);

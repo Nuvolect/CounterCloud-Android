@@ -1,1 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+/.idea/
+.idea/
+.gradle/
+CounterCloud-android.iml
+CounterCloud/CounterCloud.iml
+CounterCloud/build/
+build/
+local.properties
