@@ -15,8 +15,9 @@ import java.io.StringWriter;
 
 public class LogUtil {
 
-    public static final boolean DEBUG = false;
-    public static final boolean VERBOSE = DEBUG;
+    public static boolean DEBUG = false;
+    public static boolean VERBOSE = false;
+    
     public enum LogType {
         NIL,
         APP_SURVEY,
@@ -41,6 +42,11 @@ public class LogUtil {
         WORKER, 
         }
 
+    public static void setVerbose(boolean verbose){
+
+        VERBOSE = verbose;
+        DEBUG = verbose;
+    }
     /**
      * Post a message to the developer console if VERBOSE is enabled.
      * @param log

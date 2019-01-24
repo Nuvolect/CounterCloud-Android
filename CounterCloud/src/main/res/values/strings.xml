@@ -49,4 +49,7 @@
         <item>Select Unstarred</item>
     </string-array>
 
+    <string name="app_authorities">com.nuvolect.countercloud</string>
+    <string name="verbose_logging">false</string>
+    
 </resources>

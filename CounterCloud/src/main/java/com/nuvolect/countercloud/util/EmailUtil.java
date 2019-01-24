@@ -7,15 +7,16 @@
 
 package com.nuvolect.countercloud.util;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
 
+import com.nuvolect.countercloud.R;
 import com.nuvolect.countercloud.data.DbProvider;
 import com.nuvolect.countercloud.util.LogUtil.LogType;
+
+import java.io.File;
 
 public class EmailUtil {
 
@@ -37,8 +38,11 @@ public class EmailUtil {
             // full path to the attachment
             String path = act.getFilesDir().getPath() ;
             File file = new File( path, fileName);
+            
+            // Must match "authorities" in Manifest provider definition
+            String authorities = act.getResources().getString(R.string.app_authorities)+".provider";
 
-            Uri uri = FileProvider.getUriForFile( act, "com.nuvolect.countercloud.files", file);
+            Uri uri = FileProvider.getUriForFile( act, authorities, file);
             intent.putExtra(Intent.EXTRA_STREAM, uri);
 
             act.startActivity(Intent.createChooser(intent, "Send email..."));

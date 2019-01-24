@@ -43,7 +43,6 @@ import com.nuvolect.countercloud.util.PermissionUtil;
 public class CloudMainActivity extends FragmentActivity
         implements CloudMainFragment.Callbacks {
 
-    private final static boolean DEBUG = LogUtil.DEBUG;
     private static final int REQUEST_ID_READ_CONTACTS = 321;
     static Activity m_act;
     static Context m_ctx;
@@ -53,10 +52,16 @@ public class CloudMainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onCreate()");
 
         m_act = this;
         m_ctx = getApplicationContext();
+
+        /**
+         * Load build-dependent data into static variables that can be accessed without context.
+         */
+        String s = m_ctx.getString(R.string.verbose_logging);
+        LogUtil.setVerbose( Boolean.valueOf( m_ctx.getString(R.string.verbose_logging)));
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onCreate()");
 
         setContentView(R.layout.cloud_main_activity);
 
@@ -68,7 +73,7 @@ public class CloudMainActivity extends FragmentActivity
         @Override
         public void licenseResult(LicenseManager.LicenseResult license) {
 
-            if(DEBUG) LogUtil.log("License result: "+license.toString());
+            LogUtil.log("License result: "+license.toString());
             LicensePersist.setLicenseResult(m_ctx, license);
 
             switch ( license) {
@@ -126,12 +131,12 @@ public class CloudMainActivity extends FragmentActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onSaveInstanceState()");
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onSaveInstanceState()");
     }
 
     protected void onResume() {
         super.onResume();
-        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onResume()");
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onResume()");
 
     }
 
@@ -149,7 +154,7 @@ public class CloudMainActivity extends FragmentActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onPause()");
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onPause()");
     }
 
     void startGui(){
@@ -256,7 +261,7 @@ public class CloudMainActivity extends FragmentActivity
         switch( requestCode ){
 
             default:
-                if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "ERROR, CloudMainActivity invalid requestCode: "+requestCode);
+                LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "ERROR, CloudMainActivity invalid requestCode: "+requestCode);
                 break;
         }
 
@@ -298,7 +303,7 @@ public class CloudMainActivity extends FragmentActivity
     }
     private CloudMainFragment startCloudMainFragment(){
 
-        if(DEBUG) LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "startCloudMainFragment()");
+        LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "startCloudMainFragment()");
 
         CloudMainFragment fragment = new CloudMainFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
