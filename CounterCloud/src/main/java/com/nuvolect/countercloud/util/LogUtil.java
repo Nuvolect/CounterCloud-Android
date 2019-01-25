@@ -27,6 +27,7 @@ public class LogUtil {
         CLOUD_MAIN_ACTIVITY,
         CLOUD_MAIN_FRAGMENT,
         CLOUD_MANAGER_FRAGMENT,
+        CLOUD_MANAGER_CA,
         CRYPT,
         EVENT_LOG_FRAGMENT,
         EXPORT_EVENT_LOG,
@@ -39,8 +40,8 @@ public class LogUtil {
         UTIL, 
         WEB_SERVER, 
         WHATS_NEW, 
-        WORKER, 
-        }
+        WORKER,;
+    }
 
     public static void setVerbose(boolean verbose){
 

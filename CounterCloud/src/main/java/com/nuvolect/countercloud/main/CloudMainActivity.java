@@ -59,7 +59,6 @@ public class CloudMainActivity extends FragmentActivity
         /**
          * Load build-dependent data into static variables that can be accessed without context.
          */
-        String s = m_ctx.getString(R.string.verbose_logging);
         LogUtil.setVerbose( Boolean.valueOf( m_ctx.getString(R.string.verbose_logging)));
         LogUtil.log(LogType.CLOUD_MAIN_ACTIVITY, "onCreate()");
 

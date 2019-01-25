@@ -530,7 +530,7 @@ public class DbProvider extends ContentProvider{
     /**
      * Dump the entire event log to a file
      * @param ctx
-     * @param f1
+     * @param dumpFilename
      */
     public static boolean writeEventLog(Context ctx, String dumpFilename) {
 

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2019 Nuvolect LLC. 
- * This software is offered for free under conditions of the GPLv3 open source software license. 
- * Contact Nuvolect LLC for a less restrictive commercial license if you would like to use the software 
+ * Copyright (c) 2019 Nuvolect LLC.
+ * This software is offered for free under conditions of the GPLv3 open source software license.
+ * Contact Nuvolect LLC for a less restrictive commercial license if you would like to use the software
  * without the GPLv3 restrictions.
  */
 
@@ -13,6 +13,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
@@ -36,7 +37,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +54,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
 
     private final LayoutInflater m_inflater;
     private final int m_layout;
-    protected ListView mListView;
     CloudManagerFragment.CloudManagerMode mCloudManagerMode;
     private int m_id_index;
     private int m_starred_index;
@@ -430,7 +429,6 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
          */
         Util.lockScreenOrientation(act);
 
-        final ContentResolver contentResolver = m_ctx.getContentResolver();
         Toast.makeText(m_ctx, "Deleting: "+m_delete_set.size()+", please wait...", Toast.LENGTH_SHORT).show();
 
         userCanceled = false;
@@ -440,13 +438,12 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
         progressDialog.setMessage("Deleting " + m_delete_set.size() + " cloud items");
         progressDialog.setIndeterminate(false);
         progressDialog.setMax(m_delete_set.size());
-// For testing lifecycle
-//        progressDialog.setMax(100);
+        
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                 "Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
-                /* User clicked Cancel so do some stuff */
+                        /* User clicked Cancel so do some stuff */
                         userCanceled = true;
                         if( progressDialog != null && progressDialog.isShowing())
                             progressDialog.dismiss();
@@ -463,15 +460,8 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
 
                 m_deleted = 0;
                 LogUtil.log("doInBackground start: "+m_deleted);
+                ContentResolver cr = m_ctx.getContentResolver();
 
-// For testing lifecycle
-//                for( int i =0; i< 100; i++){
-//
-//                    progressDialog.setProgress( i );
-//
-//                    SystemClock.sleep(200);
-//                    LogUtil.log("doInBackground i: "+i);
-//                }
 
                 for( long _id : m_delete_set){
 
@@ -489,20 +479,53 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
 
                         case RAW_CONTACTS:{
 
-                            response= contentResolver.delete(
-                                    ContactsContract.RawContacts.CONTENT_URI, where, args);
+                            try {
+                                // Data table content process uri.
+                                Uri dataContentUri = ContactsContract.Data.CONTENT_URI;
+
+                                // Create data table where clause.
+                                StringBuffer dataWhereClauseBuf = new StringBuffer();
+                                dataWhereClauseBuf.append(ContactsContract.Data.RAW_CONTACT_ID);
+                                dataWhereClauseBuf.append(" = ");
+                                dataWhereClauseBuf.append( _id );
+
+                                // Delete all contact related data in data table.
+                                response = cr.delete( dataContentUri, dataWhereClauseBuf.toString(), null);
+
+                            } catch (Exception e) {
+                                LogUtil.logException(LogUtil.LogType.CLOUD_MANAGER_CA, e);
+                                response = -2;
+                            }
                             break;
                         }
                         case SECURITY_CHECK:
                         case RAW_DATA:{
 
-                            response= contentResolver.delete(
-                                    ContactsContract.Data.CONTENT_URI, where, args);
+                            try {
+                                // Data table content process uri.
+                                Uri dataContentUri = ContactsContract.Data.CONTENT_URI;
+
+                                // Create data table where clause.
+                                StringBuffer dataWhereClauseBuf = new StringBuffer();
+                                dataWhereClauseBuf.append(ContactsContract.Data.CONTENT_URI);
+                                dataWhereClauseBuf.append(" = ");
+                                dataWhereClauseBuf.append( _id );
+
+                                // Delete all contact related data in data table.
+                                response = cr.delete( dataContentUri, dataWhereClauseBuf.toString(), null);
+                                
+                            } catch (Exception e) {
+                                LogUtil.logException(LogUtil.LogType.CLOUD_MANAGER_CA, e);
+                                response = -2;
+                            }
                             break;
                         }
                     }
                     switch ( response ){
 
+                        case -2:
+                            LogUtil.log("ID: "+_id+" exception thrown");
+                            break;
                         case -1:
                             LogUtil.log("ID: "+_id+" no execution");
                             break;
@@ -511,11 +534,12 @@ public class CloudManagerCursorAdapter extends CursorAdapter {
                             Toast.makeText(m_ctx, "Delete failed", Toast.LENGTH_SHORT).show();
                             break;
                         case 1:
-                            LogUtil.log("ID: "+_id+" confirmed deleted");
+                            LogUtil.log("ID: "+_id+" confirmed one row deleted");
                             ++m_deleted;
                             break;
                         default:
-                            LogUtil.log("ID: "+_id+" unkown response: "+response);
+                            LogUtil.log("ID: "+_id+" rows deleted: "+response);
+                            m_deleted += response;
                             break;
                     }
                 }
